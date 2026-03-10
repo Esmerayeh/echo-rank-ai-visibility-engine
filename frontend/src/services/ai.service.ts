@@ -132,35 +132,35 @@ export interface DashboardMetrics {
 
 const mockDashboard: DashboardMetrics = {
   isDemo: true,
-  visibilityScore: 68,
+  visibilityScore: 72,
   visibilityScoreChange: 4.2,
-  citationProbability: 42,
+  citationProbability: 64,
   citationProbabilityChange: 12.4,
-  topicAuthority: 75,
+  topicAuthority: 78,
   topicAuthorityChange: -2.1,
-  optimizationAlerts: 12,
+  optimizationAlerts: 4,
   optimizationAlertsChange: 3,
   trendData: [
     { name: '10 Mar', score: 45 },
     { name: '11 Mar', score: 52 },
     { name: '12 Mar', score: 48 },
     { name: '13 Mar', score: 61 },
-    { name: '14 Mar', score: 55 },
-    { name: '15 Mar', score: 68 }
+    { name: '14 Mar', score: 65 },
+    { name: '15 Mar', score: 72 }
   ],
   categoryData: [
     { name: 'Clarity', value: 85 },
-    { name: 'Structure', value: 30 },
-    { name: 'Authority', value: 75 },
+    { name: 'Structure', value: 72 },
+    { name: 'Authority', value: 78 },
     { name: 'Depth', value: 80 },
-    { name: 'Definitions', value: 0 }
+    { name: 'Definitions', value: 64 }
   ],
   radarData: [
     { subject: 'Clarity', A: 85, fullMark: 100 },
-    { subject: 'Structure', A: 30, fullMark: 100 },
-    { subject: 'Authority', A: 75, fullMark: 100 },
+    { subject: 'Structure', A: 72, fullMark: 100 },
+    { subject: 'Authority', A: 78, fullMark: 100 },
     { subject: 'Depth', A: 80, fullMark: 100 },
-    { subject: 'Definitions', A: 0, fullMark: 100 }
+    { subject: 'Definitions', A: 64, fullMark: 100 }
   ],
   strengths: [
     { title: 'Semantic Clarity', description: 'Core concepts are explained using clear, unambiguous language that LLMs can easily parse.' },
@@ -170,7 +170,8 @@ const mockDashboard: DashboardMetrics = {
   weaknesses: [
     { title: 'Missing Definition Blocks', description: 'Lack of structured <dfn> or bolded terms makes it harder for AI to extract quick answers.', recommendation: 'Add a glossary or definition section.' },
     { title: 'Poor Heading Hierarchy', description: 'Inconsistent use of H2 and H3 tags confuses semantic parsing of content structure.', recommendation: 'Audit and fix heading nesting.' },
-    { title: 'Low Citation Density', description: 'Few outbound links to authoritative sources reduces trust signals for LLM evaluators.', recommendation: 'Link to reputable research papers or news sites.' }
+    { title: 'Low Citation Density', description: 'Few outbound links to authoritative sources reduces trust signals for LLM evaluators.', recommendation: 'Link to reputable research papers or news sites.' },
+    { title: 'Factual Grounding', description: 'Some claims lack direct evidential support required for high-trust citations.', recommendation: 'Add specific citations for quantitative data.' }
   ],
   optimizationOpportunities: [
     { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
@@ -178,7 +179,7 @@ const mockDashboard: DashboardMetrics = {
     { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
   ],
   history: [
-    { id: 'demo-1', url: 'https://openai.com/blog', visibilityScore: 68, timestamp: new Date().toISOString() },
+    { id: 'demo-1', url: 'https://openai.com/blog', visibilityScore: 72, timestamp: new Date().toISOString() },
     { id: 'demo-2', url: 'https://anthropic.com/news', visibilityScore: 54, timestamp: new Date(Date.now() - 86400000).toISOString() },
     { id: 'demo-3', url: 'https://perplexity.ai/about', visibilityScore: 72, timestamp: new Date(Date.now() - 172800000).toISOString() }
   ]

@@ -261,45 +261,47 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
     // Return demo analysis for OpenAI Blog if no data exists
     return c.json({
       isDemo: true,
-      visibilityScore: 92,
+      visibilityScore: 72,
       visibilityScoreChange: 4.2,
-      citationProbability: 88,
+      citationProbability: 64,
       citationProbabilityChange: 12.4,
-      topicAuthority: 95,
+      topicAuthority: 78,
       topicAuthorityChange: 2.1,
-      optimizationAlerts: 2,
+      optimizationAlerts: 4,
       optimizationAlertsChange: -1,
       trendData: [
-        { name: 'Mon', score: 85 },
-        { name: 'Tue', score: 87 },
-        { name: 'Wed', score: 86 },
-        { name: 'Thu', score: 89 },
-        { name: 'Fri', score: 91 },
-        { name: 'Sat', score: 92 },
-        { name: 'Sun', score: 92 },
+        { name: 'Mon', score: 45 },
+        { name: 'Tue', score: 52 },
+        { name: 'Wed', score: 48 },
+        { name: 'Thu', score: 61 },
+        { name: 'Fri', score: 65 },
+        { name: 'Sat', score: 70 },
+        { name: 'Sun', score: 72 },
       ],
       categoryData: [
-        { name: 'Clarity', value: 94 },
-        { name: 'Structure', value: 90 },
-        { name: 'Authority', value: 96 },
-        { name: 'Depth', value: 92 },
-        { name: 'Definitions', value: 88 }
+        { name: 'Clarity', value: 85 },
+        { name: 'Structure', value: 72 },
+        { name: 'Authority', value: 78 },
+        { name: 'Depth', value: 80 },
+        { name: 'Definitions', value: 64 }
       ],
       radarData: [
-        { subject: 'Clarity', A: 94, fullMark: 100 },
-        { subject: 'Structure', A: 90, fullMark: 100 },
-        { subject: 'Authority', A: 96, fullMark: 100 },
-        { subject: 'Depth', A: 92, fullMark: 100 },
-        { subject: 'Definitions', A: 88, fullMark: 100 }
+        { subject: 'Clarity', A: 85, fullMark: 100 },
+        { subject: 'Structure', A: 72, fullMark: 100 },
+        { subject: 'Authority', A: 78, fullMark: 100 },
+        { subject: 'Depth', A: 80, fullMark: 100 },
+        { subject: 'Definitions', A: 64, fullMark: 100 }
       ],
       strengths: [
-        { title: 'Exceptional Authority', description: 'Strong signals in AI research found throughout content.' },
-        { title: 'Technical Hierarchy', description: 'Highly structured technical explanations and documentation.' },
-        { title: 'Semantic Alignment', description: 'Excellent alignment with RAG retrieval architectures.' }
+        { title: 'Semantic Clarity', description: 'Core concepts are explained using clear, unambiguous language.' },
+        { title: 'Technical Hierarchy', description: 'Well-structured technical explanations and documentation.' },
+        { title: 'Semantic Alignment', description: 'Strong alignment with RAG retrieval architectures.' }
       ],
       weaknesses: [
-        { title: 'Definition Coverage', description: 'Moderate coverage for newer AI models and terminology.', recommendation: 'Add definition blocks.' },
-        { title: 'FAQ Inconsistency', description: 'Inconsistent FAQ blocks on research updates.', recommendation: 'Implement standardized FAQ sections.' }
+        { title: 'Definition Coverage', description: 'Missing structured definition blocks for some technical terms.', recommendation: 'Add definition blocks.' },
+        { title: 'Heading Hierarchy', description: 'Inconsistent heading nesting in some sections.', recommendation: 'Audit heading structure.' },
+        { title: 'Citation Density', description: 'Low outbound link density to authoritative sources.', recommendation: 'Add more outbound citations.' },
+        { title: 'Factual Support', description: 'Quantitative claims need more explicit grounding.', recommendation: 'Provide direct source links.' }
       ],
       optimizationOpportunities: [
         { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
@@ -369,7 +371,7 @@ aiRoutes.get('/history', async (c) => {
     return c.json([{
       id: 'demo-1',
       url: 'https://openai.com/blog',
-      visibilityScore: 92,
+      visibilityScore: 72,
       timestamp: new Date().toISOString()
     }]);
   }
