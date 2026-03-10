@@ -170,7 +170,7 @@ const mockDashboard: DashboardMetrics = {
   weaknesses: [
     { title: 'Missing Definition Blocks', description: 'Lack of structured <dfn> or bolded terms makes it harder for AI to extract quick answers.', recommendation: 'Add a glossary or definition section.' },
     { title: 'Poor Heading Hierarchy', description: 'Inconsistent use of H2 and H3 tags confuses semantic parsing of content structure.', recommendation: 'Audit and fix heading nesting.' },
-    { title: 'Low Citation Density', description: 'Few outbound links to authoritative sources reduces trust signals for LLM evaluators.', recommendation: 'Link to reputable research papers or news sites.' },
+    { title: 'Low Citation Density', description: 'Few outbound links to authoritative sources reduces trust signals for LLM evaluators.', recommendation: 'Add more outbound citations.' },
     { title: 'Factual Grounding', description: 'Some claims lack direct evidential support required for high-trust citations.', recommendation: 'Add specific citations for quantitative data.' }
   ],
   optimizationOpportunities: [
@@ -187,7 +187,7 @@ const mockDashboard: DashboardMetrics = {
 
 const mockAnalysis: AnalysisResult = {
   id: 'mock-' + Math.random().toString(36).substr(2, 9),
-  isDeepAnalysisComplete: false, // Initially false to show background process
+  isDeepAnalysisComplete: false,
   metrics: {
     visibilityScore: 68,
     citationProbability: 45,
@@ -232,7 +232,6 @@ const mockAnalysisComplete: AnalysisResult = {
   }
 };
 
-// Track if a user has run any analysis to decide when to stop showing demo data
 let userHasAnalyzed = false;
 let currentAnalysis: AnalysisResult | null = null;
 
@@ -261,13 +260,18 @@ export const aiService = {
       const response = await api.get('/ai/dashboard-metrics');
       const data = response.data;
       
-      // Strict validation of the response data
-      if (!data || typeof data.visibilityScore === 'undefined' || !data.radarData || !data.strengths) {
-        console.warn('Incomplete dashboard data received, falling back to mock');
-        return mockDashboard;
-      }
+      // Basic validation - fallback if no data at all
+      if (!data) return mockDashboard;
       
-      return data;
+      // Ensure required properties for Dashboard component don't cause crashes
+      return {
+        ...data,
+        radarData: data.radarData || [],
+        strengths: data.strengths || [],
+        weaknesses: data.weaknesses || [],
+        trendData: data.trendData || [],
+        optimizationOpportunities: data.optimizationOpportunities || []
+      };
     } catch (error) {
       console.error('Failed to fetch dashboard metrics, falling back to demo data:', error);
       return mockDashboard;
@@ -313,7 +317,6 @@ export const aiService = {
 
   getAnalysisStatus: async (id: string): Promise<AnalysisResult> => {
     if (MOCK_DATA) {
-      // Simulate that deep analysis is now complete
       if (currentAnalysis) {
         currentAnalysis = { ...mockAnalysisComplete, id };
       }
@@ -412,4 +415,3 @@ export const aiService = {
     return response.data;
   },
 };
-

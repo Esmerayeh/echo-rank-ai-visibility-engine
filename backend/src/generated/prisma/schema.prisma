@@ -59,20 +59,20 @@ model Otp {
 model Analysis {
   id                     String   @id @default(uuid())
   userId                 String?
-  type                   String // 'url', 'article', 'competitor'
+  type                   String? // 'url', 'article', 'competitor'
   url                    String?
   content                String?
   targetUrl              String?
   competitorUrl          String?
   contentHash            String?
   isDeepAnalysisComplete Boolean  @default(false)
-  visibilityScore        Int
-  citationProbability    Int
-  topicAuthority         Int
-  radarData              Json
-  insights               Json
-  recommendations        Json
-  citationRadar          Json
+  visibilityScore        Int?
+  citationProbability    Int?
+  topicAuthority         Int?
+  radarData              Json?
+  insights               Json?
+  recommendations        Json?
+  citationRadar          Json?
   competitorAnalysis     Json?
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt

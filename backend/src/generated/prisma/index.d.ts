@@ -4693,20 +4693,20 @@ export namespace Prisma {
   export type AnalysisGroupByOutputType = {
     id: string
     userId: string | null
-    type: string
+    type: string | null
     url: string | null
     content: string | null
     targetUrl: string | null
     competitorUrl: string | null
     contentHash: string | null
     isDeepAnalysisComplete: boolean
-    visibilityScore: number
-    citationProbability: number
-    topicAuthority: number
-    radarData: JsonValue
-    insights: JsonValue
-    recommendations: JsonValue
-    citationRadar: JsonValue
+    visibilityScore: number | null
+    citationProbability: number | null
+    topicAuthority: number | null
+    radarData: JsonValue | null
+    insights: JsonValue | null
+    recommendations: JsonValue | null
+    citationRadar: JsonValue | null
     competitorAnalysis: JsonValue | null
     createdAt: Date
     updatedAt: Date
@@ -4832,20 +4832,20 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       userId: string | null
-      type: string
+      type: string | null
       url: string | null
       content: string | null
       targetUrl: string | null
       competitorUrl: string | null
       contentHash: string | null
       isDeepAnalysisComplete: boolean
-      visibilityScore: number
-      citationProbability: number
-      topicAuthority: number
-      radarData: Prisma.JsonValue
-      insights: Prisma.JsonValue
-      recommendations: Prisma.JsonValue
-      citationRadar: Prisma.JsonValue
+      visibilityScore: number | null
+      citationProbability: number | null
+      topicAuthority: number | null
+      radarData: Prisma.JsonValue | null
+      insights: Prisma.JsonValue | null
+      recommendations: Prisma.JsonValue | null
+      citationRadar: Prisma.JsonValue | null
       competitorAnalysis: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
@@ -5758,13 +5758,6 @@ export namespace Prisma {
   export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
-  export const JsonNullValueInput: {
-    JsonNull: typeof JsonNull
-  };
-
-  export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -6096,20 +6089,20 @@ export namespace Prisma {
     NOT?: AnalysisWhereInput | AnalysisWhereInput[]
     id?: StringFilter<"Analysis"> | string
     userId?: StringNullableFilter<"Analysis"> | string | null
-    type?: StringFilter<"Analysis"> | string
+    type?: StringNullableFilter<"Analysis"> | string | null
     url?: StringNullableFilter<"Analysis"> | string | null
     content?: StringNullableFilter<"Analysis"> | string | null
     targetUrl?: StringNullableFilter<"Analysis"> | string | null
     competitorUrl?: StringNullableFilter<"Analysis"> | string | null
     contentHash?: StringNullableFilter<"Analysis"> | string | null
     isDeepAnalysisComplete?: BoolFilter<"Analysis"> | boolean
-    visibilityScore?: IntFilter<"Analysis"> | number
-    citationProbability?: IntFilter<"Analysis"> | number
-    topicAuthority?: IntFilter<"Analysis"> | number
-    radarData?: JsonFilter<"Analysis">
-    insights?: JsonFilter<"Analysis">
-    recommendations?: JsonFilter<"Analysis">
-    citationRadar?: JsonFilter<"Analysis">
+    visibilityScore?: IntNullableFilter<"Analysis"> | number | null
+    citationProbability?: IntNullableFilter<"Analysis"> | number | null
+    topicAuthority?: IntNullableFilter<"Analysis"> | number | null
+    radarData?: JsonNullableFilter<"Analysis">
+    insights?: JsonNullableFilter<"Analysis">
+    recommendations?: JsonNullableFilter<"Analysis">
+    citationRadar?: JsonNullableFilter<"Analysis">
     competitorAnalysis?: JsonNullableFilter<"Analysis">
     createdAt?: DateTimeFilter<"Analysis"> | Date | string
     updatedAt?: DateTimeFilter<"Analysis"> | Date | string
@@ -6119,20 +6112,20 @@ export namespace Prisma {
   export type AnalysisOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrderInput | SortOrder
-    type?: SortOrder
+    type?: SortOrderInput | SortOrder
     url?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
     targetUrl?: SortOrderInput | SortOrder
     competitorUrl?: SortOrderInput | SortOrder
     contentHash?: SortOrderInput | SortOrder
     isDeepAnalysisComplete?: SortOrder
-    visibilityScore?: SortOrder
-    citationProbability?: SortOrder
-    topicAuthority?: SortOrder
-    radarData?: SortOrder
-    insights?: SortOrder
-    recommendations?: SortOrder
-    citationRadar?: SortOrder
+    visibilityScore?: SortOrderInput | SortOrder
+    citationProbability?: SortOrderInput | SortOrder
+    topicAuthority?: SortOrderInput | SortOrder
+    radarData?: SortOrderInput | SortOrder
+    insights?: SortOrderInput | SortOrder
+    recommendations?: SortOrderInput | SortOrder
+    citationRadar?: SortOrderInput | SortOrder
     competitorAnalysis?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -6145,20 +6138,20 @@ export namespace Prisma {
     OR?: AnalysisWhereInput[]
     NOT?: AnalysisWhereInput | AnalysisWhereInput[]
     userId?: StringNullableFilter<"Analysis"> | string | null
-    type?: StringFilter<"Analysis"> | string
+    type?: StringNullableFilter<"Analysis"> | string | null
     url?: StringNullableFilter<"Analysis"> | string | null
     content?: StringNullableFilter<"Analysis"> | string | null
     targetUrl?: StringNullableFilter<"Analysis"> | string | null
     competitorUrl?: StringNullableFilter<"Analysis"> | string | null
     contentHash?: StringNullableFilter<"Analysis"> | string | null
     isDeepAnalysisComplete?: BoolFilter<"Analysis"> | boolean
-    visibilityScore?: IntFilter<"Analysis"> | number
-    citationProbability?: IntFilter<"Analysis"> | number
-    topicAuthority?: IntFilter<"Analysis"> | number
-    radarData?: JsonFilter<"Analysis">
-    insights?: JsonFilter<"Analysis">
-    recommendations?: JsonFilter<"Analysis">
-    citationRadar?: JsonFilter<"Analysis">
+    visibilityScore?: IntNullableFilter<"Analysis"> | number | null
+    citationProbability?: IntNullableFilter<"Analysis"> | number | null
+    topicAuthority?: IntNullableFilter<"Analysis"> | number | null
+    radarData?: JsonNullableFilter<"Analysis">
+    insights?: JsonNullableFilter<"Analysis">
+    recommendations?: JsonNullableFilter<"Analysis">
+    citationRadar?: JsonNullableFilter<"Analysis">
     competitorAnalysis?: JsonNullableFilter<"Analysis">
     createdAt?: DateTimeFilter<"Analysis"> | Date | string
     updatedAt?: DateTimeFilter<"Analysis"> | Date | string
@@ -6168,20 +6161,20 @@ export namespace Prisma {
   export type AnalysisOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrderInput | SortOrder
-    type?: SortOrder
+    type?: SortOrderInput | SortOrder
     url?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
     targetUrl?: SortOrderInput | SortOrder
     competitorUrl?: SortOrderInput | SortOrder
     contentHash?: SortOrderInput | SortOrder
     isDeepAnalysisComplete?: SortOrder
-    visibilityScore?: SortOrder
-    citationProbability?: SortOrder
-    topicAuthority?: SortOrder
-    radarData?: SortOrder
-    insights?: SortOrder
-    recommendations?: SortOrder
-    citationRadar?: SortOrder
+    visibilityScore?: SortOrderInput | SortOrder
+    citationProbability?: SortOrderInput | SortOrder
+    topicAuthority?: SortOrderInput | SortOrder
+    radarData?: SortOrderInput | SortOrder
+    insights?: SortOrderInput | SortOrder
+    recommendations?: SortOrderInput | SortOrder
+    citationRadar?: SortOrderInput | SortOrder
     competitorAnalysis?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -6199,20 +6192,20 @@ export namespace Prisma {
     NOT?: AnalysisScalarWhereWithAggregatesInput | AnalysisScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Analysis"> | string
     userId?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
-    type?: StringWithAggregatesFilter<"Analysis"> | string
+    type?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     url?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     content?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     targetUrl?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     competitorUrl?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     contentHash?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     isDeepAnalysisComplete?: BoolWithAggregatesFilter<"Analysis"> | boolean
-    visibilityScore?: IntWithAggregatesFilter<"Analysis"> | number
-    citationProbability?: IntWithAggregatesFilter<"Analysis"> | number
-    topicAuthority?: IntWithAggregatesFilter<"Analysis"> | number
-    radarData?: JsonWithAggregatesFilter<"Analysis">
-    insights?: JsonWithAggregatesFilter<"Analysis">
-    recommendations?: JsonWithAggregatesFilter<"Analysis">
-    citationRadar?: JsonWithAggregatesFilter<"Analysis">
+    visibilityScore?: IntNullableWithAggregatesFilter<"Analysis"> | number | null
+    citationProbability?: IntNullableWithAggregatesFilter<"Analysis"> | number | null
+    topicAuthority?: IntNullableWithAggregatesFilter<"Analysis"> | number | null
+    radarData?: JsonNullableWithAggregatesFilter<"Analysis">
+    insights?: JsonNullableWithAggregatesFilter<"Analysis">
+    recommendations?: JsonNullableWithAggregatesFilter<"Analysis">
+    citationRadar?: JsonNullableWithAggregatesFilter<"Analysis">
     competitorAnalysis?: JsonNullableWithAggregatesFilter<"Analysis">
     createdAt?: DateTimeWithAggregatesFilter<"Analysis"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Analysis"> | Date | string
@@ -6463,20 +6456,20 @@ export namespace Prisma {
   export type AnalysisCreateInput = {
     id?: string
     userId?: string | null
-    type: string
+    type?: string | null
     url?: string | null
     content?: string | null
     targetUrl?: string | null
     competitorUrl?: string | null
     contentHash?: string | null
     isDeepAnalysisComplete?: boolean
-    visibilityScore: number
-    citationProbability: number
-    topicAuthority: number
-    radarData: JsonNullValueInput | InputJsonValue
-    insights: JsonNullValueInput | InputJsonValue
-    recommendations: JsonNullValueInput | InputJsonValue
-    citationRadar: JsonNullValueInput | InputJsonValue
+    visibilityScore?: number | null
+    citationProbability?: number | null
+    topicAuthority?: number | null
+    radarData?: NullableJsonNullValueInput | InputJsonValue
+    insights?: NullableJsonNullValueInput | InputJsonValue
+    recommendations?: NullableJsonNullValueInput | InputJsonValue
+    citationRadar?: NullableJsonNullValueInput | InputJsonValue
     competitorAnalysis?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -6486,20 +6479,20 @@ export namespace Prisma {
   export type AnalysisUncheckedCreateInput = {
     id?: string
     userId?: string | null
-    type: string
+    type?: string | null
     url?: string | null
     content?: string | null
     targetUrl?: string | null
     competitorUrl?: string | null
     contentHash?: string | null
     isDeepAnalysisComplete?: boolean
-    visibilityScore: number
-    citationProbability: number
-    topicAuthority: number
-    radarData: JsonNullValueInput | InputJsonValue
-    insights: JsonNullValueInput | InputJsonValue
-    recommendations: JsonNullValueInput | InputJsonValue
-    citationRadar: JsonNullValueInput | InputJsonValue
+    visibilityScore?: number | null
+    citationProbability?: number | null
+    topicAuthority?: number | null
+    radarData?: NullableJsonNullValueInput | InputJsonValue
+    insights?: NullableJsonNullValueInput | InputJsonValue
+    recommendations?: NullableJsonNullValueInput | InputJsonValue
+    citationRadar?: NullableJsonNullValueInput | InputJsonValue
     competitorAnalysis?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -6509,20 +6502,20 @@ export namespace Prisma {
   export type AnalysisUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    type?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
     isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
-    visibilityScore?: IntFieldUpdateOperationsInput | number
-    citationProbability?: IntFieldUpdateOperationsInput | number
-    topicAuthority?: IntFieldUpdateOperationsInput | number
-    radarData?: JsonNullValueInput | InputJsonValue
-    insights?: JsonNullValueInput | InputJsonValue
-    recommendations?: JsonNullValueInput | InputJsonValue
-    citationRadar?: JsonNullValueInput | InputJsonValue
+    visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
+    topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
+    radarData?: NullableJsonNullValueInput | InputJsonValue
+    insights?: NullableJsonNullValueInput | InputJsonValue
+    recommendations?: NullableJsonNullValueInput | InputJsonValue
+    citationRadar?: NullableJsonNullValueInput | InputJsonValue
     competitorAnalysis?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6532,20 +6525,20 @@ export namespace Prisma {
   export type AnalysisUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    type?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
     isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
-    visibilityScore?: IntFieldUpdateOperationsInput | number
-    citationProbability?: IntFieldUpdateOperationsInput | number
-    topicAuthority?: IntFieldUpdateOperationsInput | number
-    radarData?: JsonNullValueInput | InputJsonValue
-    insights?: JsonNullValueInput | InputJsonValue
-    recommendations?: JsonNullValueInput | InputJsonValue
-    citationRadar?: JsonNullValueInput | InputJsonValue
+    visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
+    topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
+    radarData?: NullableJsonNullValueInput | InputJsonValue
+    insights?: NullableJsonNullValueInput | InputJsonValue
+    recommendations?: NullableJsonNullValueInput | InputJsonValue
+    citationRadar?: NullableJsonNullValueInput | InputJsonValue
     competitorAnalysis?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6555,20 +6548,20 @@ export namespace Prisma {
   export type AnalysisCreateManyInput = {
     id?: string
     userId?: string | null
-    type: string
+    type?: string | null
     url?: string | null
     content?: string | null
     targetUrl?: string | null
     competitorUrl?: string | null
     contentHash?: string | null
     isDeepAnalysisComplete?: boolean
-    visibilityScore: number
-    citationProbability: number
-    topicAuthority: number
-    radarData: JsonNullValueInput | InputJsonValue
-    insights: JsonNullValueInput | InputJsonValue
-    recommendations: JsonNullValueInput | InputJsonValue
-    citationRadar: JsonNullValueInput | InputJsonValue
+    visibilityScore?: number | null
+    citationProbability?: number | null
+    topicAuthority?: number | null
+    radarData?: NullableJsonNullValueInput | InputJsonValue
+    insights?: NullableJsonNullValueInput | InputJsonValue
+    recommendations?: NullableJsonNullValueInput | InputJsonValue
+    citationRadar?: NullableJsonNullValueInput | InputJsonValue
     competitorAnalysis?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -6578,20 +6571,20 @@ export namespace Prisma {
   export type AnalysisUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    type?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
     isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
-    visibilityScore?: IntFieldUpdateOperationsInput | number
-    citationProbability?: IntFieldUpdateOperationsInput | number
-    topicAuthority?: IntFieldUpdateOperationsInput | number
-    radarData?: JsonNullValueInput | InputJsonValue
-    insights?: JsonNullValueInput | InputJsonValue
-    recommendations?: JsonNullValueInput | InputJsonValue
-    citationRadar?: JsonNullValueInput | InputJsonValue
+    visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
+    topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
+    radarData?: NullableJsonNullValueInput | InputJsonValue
+    insights?: NullableJsonNullValueInput | InputJsonValue
+    recommendations?: NullableJsonNullValueInput | InputJsonValue
+    citationRadar?: NullableJsonNullValueInput | InputJsonValue
     competitorAnalysis?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6601,20 +6594,20 @@ export namespace Prisma {
   export type AnalysisUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     userId?: NullableStringFieldUpdateOperationsInput | string | null
-    type?: StringFieldUpdateOperationsInput | string
+    type?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
     isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
-    visibilityScore?: IntFieldUpdateOperationsInput | number
-    citationProbability?: IntFieldUpdateOperationsInput | number
-    topicAuthority?: IntFieldUpdateOperationsInput | number
-    radarData?: JsonNullValueInput | InputJsonValue
-    insights?: JsonNullValueInput | InputJsonValue
-    recommendations?: JsonNullValueInput | InputJsonValue
-    citationRadar?: JsonNullValueInput | InputJsonValue
+    visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
+    citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
+    topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
+    radarData?: NullableJsonNullValueInput | InputJsonValue
+    insights?: NullableJsonNullValueInput | InputJsonValue
+    recommendations?: NullableJsonNullValueInput | InputJsonValue
+    citationRadar?: NullableJsonNullValueInput | InputJsonValue
     competitorAnalysis?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -6933,28 +6926,16 @@ export namespace Prisma {
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
   }
-  export type JsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type AnalysisCountOrderByAggregateInput = {
@@ -7027,31 +7008,21 @@ export namespace Prisma {
     citationProbability?: SortOrder
     topicAuthority?: SortOrder
   }
-  export type JsonWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
 
-  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedJsonFilter<$PrismaModel>
-    _max?: NestedJsonFilter<$PrismaModel>
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type UserIdentityCreateNestedManyWithoutUserInput = {
@@ -7128,6 +7099,14 @@ export namespace Prisma {
 
   export type IntFieldUpdateOperationsInput = {
     set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
     increment?: number
     decrement?: number
     multiply?: number
@@ -7305,28 +7284,32 @@ export namespace Prisma {
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
   }
-  export type NestedJsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
 
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
   export type UserIdentityCreateWithoutUserInput = {

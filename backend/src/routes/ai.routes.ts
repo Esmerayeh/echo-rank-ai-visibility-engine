@@ -161,14 +161,13 @@ aiRoutes.post('/analyze', zValidator('json', analyzeSchema), async (c) => {
   const userId = c.get('userId');
   const hash = calculateHash(body);
 
-  // Check cache (global or per user? let's do global for deep analysis, but associate this one with user)
+  // Check cache
   const cached = await prisma.analysis.findFirst({
     where: { contentHash: hash, isDeleted: false, isDeepAnalysisComplete: true },
     orderBy: { createdAt: 'desc' }
   });
 
   if (cached) {
-    // Associate with user if logged in
     if (userId) {
       const { id, createdAt, updatedAt, userId: cachedUserId, ...rest } = cached;
       await prisma.analysis.create({
@@ -184,14 +183,14 @@ aiRoutes.post('/analyze', zValidator('json', analyzeSchema), async (c) => {
       id: cached.id,
       isDeepAnalysisComplete: true,
       metrics: {
-        visibilityScore: cached.visibilityScore,
-        citationProbability: cached.citationProbability,
-        topicAuthority: cached.topicAuthority,
+        visibilityScore: cached.visibilityScore ?? 0,
+        citationProbability: cached.citationProbability ?? 0,
+        topicAuthority: cached.topicAuthority ?? 0,
       },
-      radarData: cached.radarData,
-      insights: cached.insights,
-      recommendations: cached.recommendations,
-      citationRadar: cached.citationRadar,
+      radarData: cached.radarData ?? [],
+      insights: cached.insights ?? [],
+      recommendations: cached.recommendations ?? [],
+      citationRadar: cached.citationRadar ?? [],
       competitorAnalysis: cached.competitorAnalysis,
     });
   }
@@ -244,18 +243,70 @@ aiRoutes.get('/analysis/:id', async (c) => {
     id: analysis.id,
     isDeepAnalysisComplete: analysis.isDeepAnalysisComplete,
     metrics: {
-      visibilityScore: analysis.visibilityScore,
-      citationProbability: analysis.citationProbability,
-      topicAuthority: analysis.topicAuthority,
+      visibilityScore: analysis.visibilityScore ?? 0,
+      citationProbability: analysis.citationProbability ?? 0,
+      topicAuthority: analysis.topicAuthority ?? 0,
     },
-    radarData: analysis.radarData,
-    insights: analysis.insights,
-    recommendations: analysis.recommendations,
-    citationRadar: analysis.citationRadar,
+    radarData: analysis.radarData ?? [],
+    insights: analysis.insights ?? [],
+    recommendations: analysis.recommendations ?? [],
+    citationRadar: analysis.citationRadar ?? [],
     competitorAnalysis: analysis.competitorAnalysis,
     createdAt: analysis.createdAt,
   });
 });
+
+const DEMO_METRICS = {
+  isDemo: true,
+  website: 'https://openai.com/blog',
+  visibilityScore: 72,
+  visibilityScoreChange: 4.2,
+  citationProbability: 64,
+  citationProbabilityChange: 12.4,
+  topicAuthority: 78,
+  topicAuthorityChange: 2.1,
+  optimizationAlerts: 4,
+  optimizationAlertsChange: -1,
+  trendData: [
+    { name: 'Mon', score: 45 },
+    { name: 'Tue', score: 52 },
+    { name: 'Wed', score: 48 },
+    { name: 'Thu', score: 61 },
+    { name: 'Fri', score: 65 },
+    { name: 'Sat', score: 70 },
+    { name: 'Sun', score: 72 },
+  ],
+  categoryData: [
+    { name: 'Clarity', value: 85 },
+    { name: 'Structure', value: 72 },
+    { name: 'Authority', value: 78 },
+    { name: 'Depth', value: 80 },
+    { name: 'Definitions', value: 64 }
+  ],
+  radarData: [
+    { subject: 'Clarity', A: 85, fullMark: 100 },
+    { subject: 'Structure', A: 72, fullMark: 100 },
+    { subject: 'Authority', A: 78, fullMark: 100 },
+    { subject: 'Depth', A: 80, fullMark: 100 },
+    { subject: 'Definitions', A: 64, fullMark: 100 }
+  ],
+  strengths: [
+    { title: 'Semantic Clarity', description: 'Core concepts are explained using clear, unambiguous language.' },
+    { title: 'Technical Hierarchy', description: 'Well-structured technical explanations and documentation.' },
+    { title: 'Semantic Alignment', description: 'Strong alignment with RAG retrieval architectures.' }
+  ],
+  weaknesses: [
+    { title: 'Definition Coverage', description: 'Missing structured definition blocks for some technical terms.', recommendation: 'Add definition blocks.' },
+    { title: 'Heading Hierarchy', description: 'Inconsistent heading nesting in some sections.', recommendation: 'Audit heading structure.' },
+    { title: 'Citation Density', description: 'Low outbound link density to authoritative sources.', recommendation: 'Add more outbound citations.' },
+    { title: 'Factual Support', description: 'Quantitative claims need more explicit grounding.', recommendation: 'Provide direct source links.' }
+  ],
+  optimizationOpportunities: [
+    { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
+    { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
+    { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
+  ]
+};
 
 aiRoutes.get('/dashboard-metrics', async (c) => {
   const userId = c.get('userId');
@@ -273,62 +324,16 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
     });
 
     if (analyses.length === 0) {
-      // Return demo analysis for OpenAI Blog if no data exists for this user/globally
-      return c.json({
-        isDemo: true,
-        website: 'https://openai.com/blog',
-        visibilityScore: 72,
-        visibilityScoreChange: 4.2,
-        citationProbability: 64,
-        citationProbabilityChange: 12.4,
-        topicAuthority: 78,
-        topicAuthorityChange: 2.1,
-        optimizationAlerts: 4,
-        optimizationAlertsChange: -1,
-        trendData: [
-          { name: 'Mon', score: 45 },
-          { name: 'Tue', score: 52 },
-          { name: 'Wed', score: 48 },
-          { name: 'Thu', score: 61 },
-          { name: 'Fri', score: 65 },
-          { name: 'Sat', score: 70 },
-          { name: 'Sun', score: 72 },
-        ],
-        categoryData: [
-          { name: 'Clarity', value: 85 },
-          { name: 'Structure', value: 72 },
-          { name: 'Authority', value: 78 },
-          { name: 'Depth', value: 80 },
-          { name: 'Definitions', value: 64 }
-        ],
-        radarData: [
-          { subject: 'Clarity', A: 85, fullMark: 100 },
-          { subject: 'Structure', A: 72, fullMark: 100 },
-          { subject: 'Authority', A: 78, fullMark: 100 },
-          { subject: 'Depth', A: 80, fullMark: 100 },
-          { subject: 'Definitions', A: 64, fullMark: 100 }
-        ],
-        strengths: [
-          { title: 'Semantic Clarity', description: 'Core concepts are explained using clear, unambiguous language.' },
-          { title: 'Technical Hierarchy', description: 'Well-structured technical explanations and documentation.' },
-          { title: 'Semantic Alignment', description: 'Strong alignment with RAG retrieval architectures.' }
-        ],
-        weaknesses: [
-          { title: 'Definition Coverage', description: 'Missing structured definition blocks for some technical terms.', recommendation: 'Add definition blocks.' },
-          { title: 'Heading Hierarchy', description: 'Inconsistent heading nesting in some sections.', recommendation: 'Audit heading structure.' },
-          { title: 'Citation Density', description: 'Low outbound link density to authoritative sources.', recommendation: 'Add more outbound citations.' },
-          { title: 'Factual Support', description: 'Quantitative claims need more explicit grounding.', recommendation: 'Provide direct source links.' }
-        ],
-        optimizationOpportunities: [
-          { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
-          { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
-          { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
-        ]
-      });
+      return c.json(DEMO_METRICS);
     }
 
     const latest = analyses[0];
     const previous = analyses[1] || latest;
+
+    // Fallback to demo if latest analysis is completely empty
+    if (!latest.visibilityScore && !latest.radarData) {
+      return c.json(DEMO_METRICS);
+    }
 
     const calculateChange = (current: number, prev: number) => {
       if (!prev || prev === 0) return 0;
@@ -337,7 +342,7 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
 
     const trendData = [...analyses].reverse().map(a => ({
       name: a.createdAt ? a.createdAt.toLocaleDateString('en-US', { weekday: 'short' }) : 'Unknown',
-      score: a.visibilityScore || 0
+      score: a.visibilityScore ?? 0
     }));
 
     const radarData = Array.isArray(latest.radarData) ? latest.radarData : [];
@@ -345,17 +350,16 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
 
     const rawStrengths = Array.isArray(latest.insights) ? latest.insights : [];
     const rawWeaknesses = Array.isArray(latest.recommendations) ? latest.recommendations : [];
-
     const prevWeaknesses = Array.isArray(previous.recommendations) ? previous.recommendations : [];
 
     return c.json({
       isDemo: false,
-      visibilityScore: latest.visibilityScore || 0,
-      visibilityScoreChange: calculateChange(latest.visibilityScore, previous.visibilityScore),
-      citationProbability: latest.citationProbability || 0,
-      citationProbabilityChange: calculateChange(latest.citationProbability, previous.citationProbability),
-      topicAuthority: latest.topicAuthority || 0,
-      topicAuthorityChange: calculateChange(latest.topicAuthority, previous.topicAuthority),
+      visibilityScore: latest.visibilityScore ?? 0,
+      visibilityScoreChange: calculateChange(latest.visibilityScore ?? 0, previous.visibilityScore ?? 0),
+      citationProbability: latest.citationProbability ?? 0,
+      citationProbabilityChange: calculateChange(latest.citationProbability ?? 0, previous.citationProbability ?? 0),
+      topicAuthority: latest.topicAuthority ?? 0,
+      topicAuthorityChange: calculateChange(latest.topicAuthority ?? 0, previous.topicAuthority ?? 0),
       optimizationAlerts: rawWeaknesses.length,
       optimizationAlertsChange: rawWeaknesses.length - prevWeaknesses.length,
       trendData,
@@ -378,58 +382,7 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
     });
   } catch (error) {
     console.error('Failed to fetch dashboard metrics, returning demo data:', error);
-    // Return demo analysis for OpenAI Blog if database fails
-    return c.json({
-      isDemo: true,
-      website: 'https://openai.com/blog',
-      visibilityScore: 72,
-      visibilityScoreChange: 4.2,
-      citationProbability: 64,
-      citationProbabilityChange: 12.4,
-      topicAuthority: 78,
-      topicAuthorityChange: 2.1,
-      optimizationAlerts: 4,
-      optimizationAlertsChange: -1,
-      trendData: [
-        { name: 'Mon', score: 45 },
-        { name: 'Tue', score: 52 },
-        { name: 'Wed', score: 48 },
-        { name: 'Thu', score: 61 },
-        { name: 'Fri', score: 65 },
-        { name: 'Sat', score: 70 },
-        { name: 'Sun', score: 72 },
-      ],
-      categoryData: [
-        { name: 'Clarity', value: 85 },
-        { name: 'Structure', value: 72 },
-        { name: 'Authority', value: 78 },
-        { name: 'Depth', value: 80 },
-        { name: 'Definitions', value: 64 }
-      ],
-      radarData: [
-        { subject: 'Clarity', A: 85, fullMark: 100 },
-        { subject: 'Structure', A: 72, fullMark: 100 },
-        { subject: 'Authority', A: 78, fullMark: 100 },
-        { subject: 'Depth', A: 80, fullMark: 100 },
-        { subject: 'Definitions', A: 64, fullMark: 100 }
-      ],
-      strengths: [
-        { title: 'Semantic Clarity', description: 'Core concepts are explained using clear, unambiguous language.' },
-        { title: 'Technical Hierarchy', description: 'Well-structured technical explanations and documentation.' },
-        { title: 'Semantic Alignment', description: 'Strong alignment with RAG retrieval architectures.' }
-      ],
-      weaknesses: [
-        { title: 'Definition Coverage', description: 'Missing structured definition blocks for some technical terms.', recommendation: 'Add definition blocks.' },
-        { title: 'Heading Hierarchy', description: 'Inconsistent heading nesting in some sections.', recommendation: 'Audit heading structure.' },
-        { title: 'Citation Density', description: 'Low outbound link density to authoritative sources.', recommendation: 'Add more outbound citations.' },
-        { title: 'Factual Support', description: 'Quantitative claims need more explicit grounding.', recommendation: 'Provide direct source links.' }
-      ],
-      optimizationOpportunities: [
-        { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
-        { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
-        { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
-      ]
-    });
+    return c.json(DEMO_METRICS);
   }
 });
 
@@ -458,8 +411,8 @@ aiRoutes.get('/history', async (c) => {
   return c.json(history.map(item => ({
     id: item.id,
     url: item.url || item.targetUrl || 'Article Analysis',
-    visibilityScore: item.visibilityScore,
-    timestamp: item.createdAt.toISOString()
+    visibilityScore: item.visibilityScore ?? 0,
+    timestamp: item.createdAt ? item.createdAt.toISOString() : new Date().toISOString()
   })));
 });
 
@@ -636,8 +589,6 @@ aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
   const { content, fileType } = c.req.valid('json');
   
   try {
-    // Replace cloud storage with a base64 data URI placeholder
-    // This allows the frontend to trigger a download without needing a server-side file store
     const mimeType = fileType === 'pdf' ? 'application/pdf' : 'text/plain';
     const base64Data = Buffer.from(content).toString('base64');
     const dataUri = `data:${mimeType};base64,${base64Data}`;
@@ -658,9 +609,6 @@ aiRoutes.post('/upload', async (c) => {
   }
 
   try {
-    // Replace cloud storage with a mock URL placeholder
-    // In a real local-only app, we might save to disk, but for this request, 
-    // we are removing all cloud storage dependencies.
     const fileName = (file as any).name || 'upload';
     const mockUrl = `https://placeholder.com/uploads/${Date.now()}-${fileName}`;
     
