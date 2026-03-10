@@ -148,11 +148,11 @@ async function runDeepAnalysis(analysisId: string, body: any) {
       try {
         const storage = getStorageProvider();
         const jsonContent = JSON.stringify(result, null, 2);
-        const base64Data = Buffer.from(jsonContent).toString('base64');
-        await storage.uploadData({
-          data: base64Data,
+        const buffer = Buffer.from(jsonContent);
+        const blob = new Blob([buffer], { type: 'application/json' });
+        await storage.uploadFile({
+          file: blob as any,
           destinationKey: `analysis-${analysisId}.json`,
-          contentType: 'application/json',
         });
       } catch (storageError) {
         console.error('Failed to store analysis report in GCP storage:', storageError);
@@ -591,112 +591,3 @@ aiRoutes.post('/upload', async (c) => {
 });
 
 export default aiRoutes;
-
-  
-  
-  
-  const exportSchema = z.object({
-  
-    content: z.string(),
-  
-    fileName: z.string(),
-  
-    fileType: z.string().optional(),
-  
-  });
-  
-  
-  
-  aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
-  
-    const body = c.req.valid('json');
-  
-    const storage = getStorageProvider();
-  
-    
-  
-    const base64Data = Buffer.from(body.content).toString('base64');
-  
-    const destinationKey = `exports/${Date.now()}-${body.fileName}`;
-  
-    
-  
-    await storage.uploadData({
-  
-      data: base64Data,
-  
-      destinationKey,
-  
-      contentType: body.fileType || 'text/plain',
-  
-    });
-  
-    
-  
-    const { url } = await storage.generateDownloadSignedUrl({
-  
-      key: destinationKey,
-  
-      fileName: body.fileName,
-  
-    });
-  
-    
-  
-    return c.json({ url });
-  
-  });
-  
-  
-  
-  aiRoutes.post('/upload', async (c) => {
-  
-    const body = await c.req.parseBody();
-  
-    const file = body.file as any;
-  
-    if (!file) throw new Error('No file provided');
-  
-    
-  
-    const storage = getStorageProvider();
-  
-    const arrayBuffer = await file.arrayBuffer();
-  
-    const base64Data = Buffer.from(arrayBuffer).toString('base64');
-  
-    const destinationKey = `uploads/${Date.now()}-${file.name}`;
-  
-    
-  
-    await storage.uploadData({
-  
-      data: base64Data,
-  
-      destinationKey,
-  
-      contentType: file.type,
-  
-    });
-  
-    
-  
-    const { url } = await storage.generateDownloadSignedUrl({
-  
-      key: destinationKey,
-  
-      fileName: file.name,
-  
-    });
-  
-    
-  
-    return c.json({ url });
-  
-  });
-  
-  
-  
-  export default aiRoutes;
-  
-  

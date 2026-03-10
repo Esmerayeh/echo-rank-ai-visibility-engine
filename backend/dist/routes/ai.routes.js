@@ -135,11 +135,11 @@ async function runDeepAnalysis(analysisId, body) {
             try {
                 const storage = getStorageProvider();
                 const jsonContent = JSON.stringify(result, null, 2);
-                const base64Data = Buffer.from(jsonContent).toString('base64');
-                await storage.uploadData({
-                    data: base64Data,
+                const buffer = Buffer.from(jsonContent);
+                const blob = new Blob([buffer], { type: 'application/json' });
+                await storage.uploadFile({
+                    file: blob,
                     destinationKey: `analysis-${analysisId}.json`,
-                    contentType: 'application/json',
                 });
             }
             catch (storageError) {
@@ -495,42 +495,37 @@ aiRoutes.post('/simulate', zValidator('json', simulateSchema), async (c) => {
 const exportSchema = z.object({
     content: z.string(),
     fileName: z.string(),
-    fileType: z.string().optional(),
+    fileType: z.string(),
 });
 aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
     const body = c.req.valid('json');
     const storage = getStorageProvider();
-    const base64Data = Buffer.from(body.content).toString('base64');
-    const destinationKey = `exports/${Date.now()}-${body.fileName}`;
-    await storage.uploadData({
-        data: base64Data,
-        destinationKey,
-        contentType: body.fileType || 'text/plain',
+    const buffer = Buffer.from(body.content);
+    const blob = new Blob([buffer], { type: body.fileType });
+    const uploadResponse = await storage.uploadFile({
+        file: blob,
+        destinationKey: `exports/${Date.now()}-${body.fileName}`,
     });
-    const { url } = await storage.generateDownloadSignedUrl({
-        key: destinationKey,
-        fileName: body.fileName,
+    const urlResponse = await storage.generateDownloadSignedUrl({
+        key: uploadResponse.key,
     });
-    return c.json({ url });
+    return c.json({ url: urlResponse.url });
 });
 aiRoutes.post('/upload', async (c) => {
-    const body = await c.req.parseBody();
-    const file = body.file;
+    const formData = await c.req.formData();
+    const file = formData.get('file');
     if (!file)
         throw new Error('No file provided');
     const storage = getStorageProvider();
-    const arrayBuffer = await file.arrayBuffer();
-    const base64Data = Buffer.from(arrayBuffer).toString('base64');
-    const destinationKey = `uploads/${Date.now()}-${file.name}`;
-    await storage.uploadData({
-        data: base64Data,
-        destinationKey,
-        contentType: file.type,
+    const buffer = await file.arrayBuffer();
+    const blob = new Blob([buffer], { type: file.type });
+    const uploadResponse = await storage.uploadFile({
+        file: blob,
+        destinationKey: `uploads/${Date.now()}-${file.name}`,
     });
-    const { url } = await storage.generateDownloadSignedUrl({
-        key: destinationKey,
-        fileName: file.name,
+    const urlResponse = await storage.generateDownloadSignedUrl({
+        key: uploadResponse.key,
     });
-    return c.json({ url });
+    return c.json({ url: urlResponse.url });
 });
 export default aiRoutes;
