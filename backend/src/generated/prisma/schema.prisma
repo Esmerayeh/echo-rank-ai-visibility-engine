@@ -16,7 +16,7 @@ model User {
   email      String         @unique
   name       String?
   createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @default(now()) @updatedAt
+  updatedAt  DateTime       @updatedAt
   isDeleted  Boolean        @default(false)
   identities UserIdentity[]
 
@@ -31,7 +31,7 @@ model UserIdentity {
   providerId String // Provider's unique user ID (or email for email/password)
   metadata   Json? // Provider-specific data (passwordHash, tokens, profile data, etc.)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
   isDeleted  Boolean  @default(false)
 
   @@unique([provider, providerId])
@@ -48,7 +48,7 @@ model Otp {
   verified   Boolean  @default(false)
   purpose    String? // 'login', 'registration', 'password_reset', '2fa', etc.
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
   isDeleted  Boolean  @default(false)
 
   @@index([identifier, type])
@@ -75,7 +75,7 @@ model Analysis {
   citationRadar          Json
   competitorAnalysis     Json?
   createdAt              DateTime @default(now())
-  updatedAt              DateTime @default(now()) @updatedAt
+  updatedAt              DateTime @updatedAt
   isDeleted              Boolean  @default(false)
 
   @@index([userId])

@@ -14,6 +14,10 @@ Starts an analysis or retrieves cached result.
 Polls status and retrieves latest results for a specific analysis.
 - Returns: `{ id, isDeepAnalysisComplete, metrics, radarData, insights, recommendations, citationRadar, competitorAnalysis? }`
 
+### GET /history
+Fetches recent analysis history.
+- Returns: Array of `{ id, url, visibilityScore, timestamp }`
+
 ### GET /dashboard-metrics
 Fetches summary metrics for the dashboard.
 - Returns: Latest metrics and trend data.
@@ -24,8 +28,7 @@ Optimizes article content.
 - Returns: Optimized title, sections, and FAQs.
 
 ### GET /topic-map
-Generates topic authority map data.
-- Body: `{ topic: string, audience: string, goal: string }`
+Generates topic authority map data based on latest analysis.
 - Returns: Topics and connections.
 
 ### POST /generate
