@@ -316,6 +316,14 @@ aiRoutes.get('/history', async (c) => {
         orderBy: { createdAt: 'desc' },
         take: 20
     });
+    if (history.length === 0) {
+        return c.json([{
+                id: 'demo-1',
+                url: 'https://openai.com/blog',
+                visibilityScore: 92,
+                timestamp: new Date().toISOString()
+            }]);
+    }
     return c.json(history.map(item => ({
         id: item.id,
         url: item.url || item.targetUrl || 'Article Analysis',

@@ -176,7 +176,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
               <h1 className="text-3xl font-bold text-foreground tracking-tight">AI Visibility Dashboard</h1>
               {metrics.isDemo && (
                 <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase tracking-widest border border-blue-500/20">
-                  Demo Mode
+                  Demo Analysis
                 </span>
               )}
             </div>
