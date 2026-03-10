@@ -220,9 +220,13 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
         return c.json({
             isDemo: true,
             visibilityScore: 92,
+            visibilityScoreChange: 4.2,
             citationProbability: 88,
+            citationProbabilityChange: 12.4,
             topicAuthority: 95,
+            topicAuthorityChange: 2.1,
             optimizationAlerts: 2,
+            optimizationAlertsChange: -1,
             trendData: [
                 { name: 'Mon', score: 85 },
                 { name: 'Tue', score: 87 },
@@ -247,35 +251,77 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
                 { subject: 'Definitions', A: 88, fullMark: 100 }
             ],
             strengths: [
-                'Exceptional authority signals in AI research',
-                'Highly structured technical explanations',
-                'Clear semantic hierarchy in blog posts'
+                { title: 'Exceptional Authority', description: 'Strong signals in AI research found throughout content.' },
+                { title: 'Technical Hierarchy', description: 'Highly structured technical explanations and documentation.' },
+                { title: 'Semantic Alignment', description: 'Excellent alignment with RAG retrieval architectures.' }
             ],
             weaknesses: [
-                'Moderate definitional coverage for newer models',
-                'Inconsistent FAQ blocks on research updates'
+                { title: 'Definition Coverage', description: 'Moderate coverage for newer AI models and terminology.', recommendation: 'Add definition blocks.' },
+                { title: 'FAQ Inconsistency', description: 'Inconsistent FAQ blocks on research updates.', recommendation: 'Implement standardized FAQ sections.' }
+            ],
+            optimizationOpportunities: [
+                { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
+                { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
+                { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
             ]
         });
     }
     const latest = analyses[0];
+    const previous = analyses[1] || latest;
+    const calculateChange = (current, prev) => {
+        if (prev === 0)
+            return 0;
+        return parseFloat(((current - prev) / prev * 100).toFixed(1));
+    };
     const trendData = [...analyses].reverse().map(a => ({
         name: a.createdAt.toLocaleDateString('en-US', { weekday: 'short' }),
         score: a.visibilityScore
     }));
     const radarData = latest.radarData || [];
     const categoryData = radarData.map(r => ({ name: r.subject, value: r.A }));
+    const rawStrengths = latest.insights || [];
+    const rawWeaknesses = latest.recommendations || [];
     return c.json({
         isDemo: false,
         visibilityScore: latest.visibilityScore,
+        visibilityScoreChange: calculateChange(latest.visibilityScore, previous.visibilityScore),
         citationProbability: latest.citationProbability,
+        citationProbabilityChange: calculateChange(latest.citationProbability, previous.citationProbability),
         topicAuthority: latest.topicAuthority,
-        optimizationAlerts: (latest.recommendations || []).length,
+        topicAuthorityChange: calculateChange(latest.topicAuthority, previous.topicAuthority),
+        optimizationAlerts: rawWeaknesses.length,
+        optimizationAlertsChange: rawWeaknesses.length - (previous.recommendations || []).length,
         trendData,
         categoryData,
         radarData,
-        strengths: (latest.insights || []).map(i => i.title),
-        weaknesses: (latest.recommendations || []).filter(r => r.impact === 'high').map(r => r.title)
+        strengths: rawStrengths.map(s => ({
+            title: s.title,
+            description: s.description
+        })),
+        weaknesses: rawWeaknesses.filter(w => w.impact === 'high' || w.impact === 'medium').map(w => ({
+            title: w.title,
+            description: w.description,
+            recommendation: `Follow remediation plan for ${w.title}`
+        })),
+        optimizationOpportunities: [
+            { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
+            { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
+            { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
+        ]
     });
+});
+aiRoutes.get('/history', async (c) => {
+    const history = await prisma.analysis.findMany({
+        where: { isDeleted: false },
+        orderBy: { createdAt: 'desc' },
+        take: 20
+    });
+    return c.json(history.map(item => ({
+        id: item.id,
+        url: item.url || item.targetUrl || 'Article Analysis',
+        visibilityScore: item.visibilityScore,
+        timestamp: item.createdAt.toISOString()
+    })));
 });
 const optimizeSchema = z.object({
     content: z.string(),

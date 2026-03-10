@@ -114,23 +114,32 @@ export interface HistoryItem {
 export interface DashboardMetrics {
   isDemo?: boolean;
   visibilityScore: number;
+  visibilityScoreChange: number;
   citationProbability: number;
+  citationProbabilityChange: number;
   topicAuthority: number;
+  topicAuthorityChange: number;
   optimizationAlerts: number;
+  optimizationAlertsChange: number;
   trendData: { name: string; score: number }[];
   categoryData: { name: string; value: number }[];
   radarData: { subject: string; A: number; fullMark: number }[];
-  strengths: string[];
-  weaknesses: string[];
+  strengths: { title: string; description: string }[];
+  weaknesses: { title: string; description: string; recommendation: string }[];
+  optimizationOpportunities: { title: string; impact: 'High' | 'Medium' | 'Low'; description: string }[];
   history?: HistoryItem[];
 }
 
 const mockDashboard: DashboardMetrics = {
   isDemo: true,
   visibilityScore: 68,
+  visibilityScoreChange: 4.2,
   citationProbability: 42,
+  citationProbabilityChange: 12.4,
   topicAuthority: 75,
+  topicAuthorityChange: -2.1,
   optimizationAlerts: 12,
+  optimizationAlertsChange: 3,
   trendData: [
     { name: '10 Mar', score: 45 },
     { name: '11 Mar', score: 52 },
@@ -154,14 +163,19 @@ const mockDashboard: DashboardMetrics = {
     { subject: 'Definitions', A: 0, fullMark: 100 }
   ],
   strengths: [
-    'Comprehensive overview of LLM architectures',
-    'Clear section headings',
-    'High-quality external citations'
+    { title: 'Semantic Clarity', description: 'Core concepts are explained using clear, unambiguous language that LLMs can easily parse.' },
+    { title: 'Topical Depth', description: 'Content covers a wide range of sub-topics, signaling high topical authority to retrieval systems.' },
+    { title: 'Expert Terminology', description: 'Use of industry-standard terms helps AI models categorize the content as high-authority.' }
   ],
   weaknesses: [
-    'Lacks concise definition blocks for technical terms',
-    'FAQ section is missing',
-    'Some paragraphs are overly dense for LLM summarization'
+    { title: 'Missing Definition Blocks', description: 'Lack of structured <dfn> or bolded terms makes it harder for AI to extract quick answers.', recommendation: 'Add a glossary or definition section.' },
+    { title: 'Poor Heading Hierarchy', description: 'Inconsistent use of H2 and H3 tags confuses semantic parsing of content structure.', recommendation: 'Audit and fix heading nesting.' },
+    { title: 'Low Citation Density', description: 'Few outbound links to authoritative sources reduces trust signals for LLM evaluators.', recommendation: 'Link to reputable research papers or news sites.' }
+  ],
+  optimizationOpportunities: [
+    { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
+    { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
+    { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
   ],
   history: [
     { id: '1', url: 'https://openai.com/blog', visibilityScore: 68, timestamp: new Date().toISOString() },

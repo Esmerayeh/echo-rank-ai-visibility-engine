@@ -21,6 +21,7 @@ import {
   AlertCircle, 
   ArrowUpRight, 
   ArrowDownRight,
+  ArrowRight,
   CheckCircle2, 
   TrendingUp, 
   Loader2, 
@@ -147,6 +148,19 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
     return 'bg-red-500/10 border-red-500/20';
   };
 
+  const renderTrendIndicator = (change: number) => {
+    const isPositive = change >= 0;
+    return (
+      <div className={cn(
+        "flex items-center gap-1.5 text-[10px] font-black px-2 py-0.5 rounded-full border",
+        isPositive ? "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" : "text-red-500 bg-red-500/10 border-red-500/20"
+      )}>
+        {isPositive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+        <span>{Math.abs(change)}%</span>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Main Content */}
@@ -189,14 +203,11 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                 <div>
                   <CardTitle className="text-sm font-black text-muted-foreground uppercase tracking-widest">Core AI Visibility Score</CardTitle>
                 </div>
-                <div className={cn("flex items-center gap-1.5 text-xs font-black px-2 py-1 rounded-full", getScoreBg(metrics.visibilityScore), getScoreColor(metrics.visibilityScore))}>
-                  <ArrowUpRight className="w-3 h-3" />
-                  <span>+4.2%</span>
-                </div>
+                {renderTrendIndicator(metrics.visibilityScoreChange)}
               </CardHeader>
               <CardContent className="pt-4">
                 <div className="flex flex-col md:flex-row items-center gap-8">
-                  <div className="relative group/radar w-full md:w-[350px] h-[350px]">
+                  <div className="relative group/radar w-full md:w-[400px] h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <RadarChart cx="50%" cy="50%" outerRadius="80%" data={metrics.radarData}>
                         <PolarGrid stroke="#26262c" />
@@ -209,14 +220,14 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                             if (active && payload && payload.length) {
                               const data = payload[0].payload;
                               return (
-                                <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-xl shadow-2xl max-w-[200px]">
-                                  <p className="text-sm font-bold text-white mb-1">{data.subject}</p>
-                                  <p className="text-[10px] text-zinc-400 leading-tight">
+                                <div className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl shadow-2xl max-w-[250px] animate-in zoom-in duration-200">
+                                  <p className="text-sm font-bold text-white mb-2">{data.subject}</p>
+                                  <p className="text-xs text-zinc-400 leading-relaxed mb-3">
                                     {RADAR_TOOLTIPS[data.subject] || 'Evaluation metric for AI visibility.'}
                                   </p>
-                                  <div className="mt-2 flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase text-zinc-500">Score</span>
-                                    <span className={cn("text-xs font-black", getScoreColor(data.A))}>{data.A}%</span>
+                                  <div className="pt-3 border-t border-zinc-800 flex items-center justify-between">
+                                    <span className="text-[10px] font-black uppercase text-zinc-500">Performance</span>
+                                    <span className={cn("text-sm font-black", getScoreColor(data.A))}>{data.A}%</span>
                                   </div>
                                 </div>
                               );
@@ -230,7 +241,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                           stroke="#3b82f6"
                           fill="#3b82f6"
                           fillOpacity={0.3}
-                          strokeWidth={3}
+                          strokeWidth={4}
                         />
                       </RadarChart>
                     </ResponsiveContainer>
@@ -238,31 +249,31 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                   <div className="flex-1 space-y-6 w-full py-4">
                     <div className="space-y-1">
                       <div className="flex items-end gap-2">
-                        <p className={cn("text-7xl font-black tracking-tighter", getScoreColor(metrics.visibilityScore))}>
+                        <p className={cn("text-8xl font-black tracking-tighter leading-none", getScoreColor(metrics.visibilityScore))}>
                           {metrics.visibilityScore}%
                         </p>
                       </div>
-                      <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide">Overall Visibility Index</p>
+                      <p className="text-sm text-muted-foreground font-black uppercase tracking-widest">Overall Visibility Index</p>
                     </div>
                     
                     <div className="space-y-4">
-                      <div className="p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
-                        <p className="text-xs text-blue-400 font-bold uppercase tracking-widest mb-1">Status</p>
-                        <p className="text-sm text-foreground font-medium">
-                          {metrics.visibilityScore >= 70 ? "Your content is highly optimized for RAG systems." : 
-                           metrics.visibilityScore >= 40 ? "Moderate visibility. Semantic gaps detected in key topics." : 
-                           "Critical visibility issues. LLMs may fail to index accurately."}
+                      <div className="p-5 bg-blue-500/5 rounded-2xl border border-blue-500/10">
+                        <p className="text-xs text-blue-400 font-bold uppercase tracking-widest mb-2">AI Summary</p>
+                        <p className="text-sm text-foreground font-medium leading-relaxed">
+                          {metrics.visibilityScore >= 70 ? "Your content demonstrates exceptional semantic alignment with RAG retrieval architectures." : 
+                           metrics.visibilityScore >= 40 ? "Moderate visibility. We've detected critical semantic gaps in definition blocks and topic coverage." : 
+                           "Critical visibility issues. Current content structure may cause LLMs to omit your information from generated responses."}
                         </p>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <p className="text-[10px] uppercase font-black text-muted-foreground">Global Rank</p>
-                          <p className="text-lg font-bold text-foreground">Top 12%</p>
+                        <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                          <p className="text-[10px] uppercase font-black text-muted-foreground mb-1">Global Rank</p>
+                          <p className="text-xl font-bold text-foreground">Top 12%</p>
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-[10px] uppercase font-black text-muted-foreground">Index Probability</p>
-                          <p className="text-lg font-bold text-foreground">94.2%</p>
+                        <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
+                          <p className="text-[10px] uppercase font-black text-muted-foreground mb-1">Index Prob.</p>
+                          <p className="text-xl font-bold text-foreground">94.2%</p>
                         </div>
                       </div>
                     </div>
@@ -275,7 +286,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
           {/* Metric Cards Column */}
           <div className="flex flex-col gap-6">
             <motion.div variants={itemVariants}>
-              <Card className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-colors">
+              <Card className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-all hover:scale-[1.02]">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="space-y-1">
@@ -284,16 +295,16 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                     </div>
                     <Gauge value={metrics.citationProbability} size={70} strokeWidth={7} color={metrics.citationProbability >= 70 ? '#10b981' : metrics.citationProbability >= 40 ? '#f59e0b' : '#ef4444'} />
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-500 bg-emerald-500/10 w-fit px-2 py-1 rounded-lg">
-                    <ArrowUpRight className="w-3 h-3" />
-                    <span>+12.4%</span>
+                  <div className="flex items-center justify-between">
+                    {renderTrendIndicator(metrics.citationProbabilityChange)}
+                    <span className="text-[10px] font-bold text-muted-foreground">vs Last Week</span>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Card className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-colors">
+              <Card className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-all hover:scale-[1.02]">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="space-y-1">
@@ -302,29 +313,29 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                     </div>
                     <Gauge value={metrics.topicAuthority} size={70} strokeWidth={7} color={metrics.topicAuthority >= 70 ? '#8b5cf6' : metrics.topicAuthority >= 40 ? '#f59e0b' : '#ef4444'} />
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 bg-zinc-800 w-fit px-2 py-1 rounded-lg">
-                    <TrendingUp className="w-3 h-3" />
-                    <span>98th Percentile</span>
+                  <div className="flex items-center justify-between">
+                    {renderTrendIndicator(metrics.topicAuthorityChange)}
+                    <span className="text-[10px] font-bold text-muted-foreground">Expert Ranking</span>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Card className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-colors">
+              <Card className="bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 transition-all hover:scale-[1.02]">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="space-y-1">
                       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Alerts</p>
                       <p className={cn("text-4xl font-black", metrics.optimizationAlerts > 0 ? 'text-red-500' : 'text-emerald-500')}>{metrics.optimizationAlerts}</p>
                     </div>
-                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform hover:scale-110", metrics.optimizationAlerts > 0 ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500')}>
+                    <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:rotate-12", metrics.optimizationAlerts > 0 ? 'bg-red-500/10 text-red-500' : 'bg-emerald-500/10 text-emerald-500')}>
                       <AlertCircle className="w-8 h-8" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-500/10 w-fit px-2 py-1 rounded-lg">
-                    <ArrowDownRight className="w-3 h-3" />
-                    <span>Critical issues</span>
+                  <div className="flex items-center justify-between">
+                    {renderTrendIndicator(-metrics.optimizationAlertsChange)}
+                    <span className="text-[10px] font-bold text-muted-foreground">Issues Detected</span>
                   </div>
                 </CardContent>
               </Card>
@@ -335,13 +346,13 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
         {/* Expandable Insights */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <motion.div variants={itemVariants}>
-            <Card className="border-zinc-800 bg-zinc-900/30 overflow-hidden">
+            <Card className="border-zinc-800 bg-zinc-900/30 overflow-hidden group">
               <button 
                 onClick={() => setExpandedStrengths(!expandedStrengths)}
                 className="w-full text-left"
               >
                 <CardHeader className="flex flex-row items-center justify-between pb-4">
-                  <CardTitle className="flex items-center gap-2 text-emerald-500">
+                  <CardTitle className="flex items-center gap-2 text-emerald-500 group-hover:translate-x-1 transition-transform">
                     <Shield className="w-5 h-5" />
                     Content Strengths
                   </CardTitle>
@@ -357,37 +368,41 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                     className="overflow-hidden"
                   >
                     <CardContent className="pt-0 pb-6">
-                      <ul className="space-y-4">
+                      <div className="space-y-4">
                         {metrics.strengths.map((strength, i) => (
-                          <li key={i} className="flex items-start gap-4 p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
-                            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                            <div className="space-y-1">
-                              <p className="text-sm text-foreground font-semibold leading-relaxed">{strength}</p>
-                              <p className="text-xs text-muted-foreground">AI relevance signal: Positive</p>
+                          <div key={i} className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 hover:bg-emerald-500/10 transition-colors">
+                            <div className="flex items-start gap-3">
+                              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                              <div className="space-y-1">
+                                <p className="text-sm text-foreground font-bold">{strength.title}</p>
+                                <p className="text-xs text-muted-foreground leading-relaxed">{strength.description}</p>
+                              </div>
                             </div>
-                          </li>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </CardContent>
                   </motion.div>
                 )}
               </AnimatePresence>
               {!expandedStrengths && (
                 <CardContent className="pt-0 pb-4">
-                  <p className="text-xs text-muted-foreground italic">Click to view {metrics.strengths.length} primary content strengths...</p>
+                  <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-2">
+                    {metrics.strengths.length} critical strengths detected
+                  </p>
                 </CardContent>
               )}
             </Card>
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <Card className="border-zinc-800 bg-zinc-900/30 overflow-hidden">
+            <Card className="border-zinc-800 bg-zinc-900/30 overflow-hidden group">
               <button 
                 onClick={() => setExpandedWeaknesses(!expandedWeaknesses)}
                 className="w-full text-left"
               >
                 <CardHeader className="flex flex-row items-center justify-between pb-4">
-                  <CardTitle className="flex items-center gap-2 text-red-500">
+                  <CardTitle className="flex items-center gap-2 text-red-500 group-hover:translate-x-1 transition-transform">
                     <AlertCircle className="w-5 h-5" />
                     Critical Weaknesses
                   </CardTitle>
@@ -403,26 +418,34 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                     className="overflow-hidden"
                   >
                     <CardContent className="pt-0 pb-6">
-                      <ul className="space-y-4">
+                      <div className="space-y-4">
                         {metrics.weaknesses.map((weakness, i) => (
-                          <li key={i} className="flex items-start gap-4 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
-                            <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5 text-red-500">
-                              <span className="text-[10px] font-black">!</span>
+                          <div key={i} className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 transition-colors">
+                            <div className="flex items-start gap-3">
+                              <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5 text-red-500">
+                                <span className="text-[10px] font-black">!</span>
+                              </div>
+                              <div className="space-y-2">
+                                <p className="text-sm text-foreground font-bold">{weakness.title}</p>
+                                <p className="text-xs text-muted-foreground leading-relaxed">{weakness.description}</p>
+                                <div className="pt-2 flex items-center gap-2">
+                                  <Zap className="w-3 h-3 text-amber-500" />
+                                  <p className="text-[10px] font-black text-amber-500 uppercase">Recommendation: {weakness.recommendation}</p>
+                                </div>
+                              </div>
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-sm text-foreground font-semibold leading-relaxed">{weakness}</p>
-                              <p className="text-xs text-red-400 font-medium cursor-pointer hover:underline">View AI remediation plan →</p>
-                            </div>
-                          </li>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </CardContent>
                   </motion.div>
                 )}
               </AnimatePresence>
               {!expandedWeaknesses && (
                 <CardContent className="pt-0 pb-4">
-                  <p className="text-xs text-muted-foreground italic">Click to view {metrics.weaknesses.length} critical optimization issues...</p>
+                  <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-2">
+                    {metrics.weaknesses.length} critical weaknesses detected
+                  </p>
                 </CardContent>
               )}
             </Card>
@@ -431,32 +454,31 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
 
         {/* AI Optimization Opportunities */}
         <motion.div variants={itemVariants}>
-          <Card className="border-zinc-800 bg-gradient-to-br from-blue-600/5 to-transparent">
+          <Card className="border-zinc-800 bg-gradient-to-br from-blue-600/5 to-transparent relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+              <Lightbulb className="w-32 h-32 text-blue-500" />
+            </div>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="w-5 h-5 text-amber-500" />
                 AI Optimization Opportunities
               </CardTitle>
-              <CardDescription>Actionable improvements to boost LLM visibility and citation probability</CardDescription>
+              <CardDescription>Targeted improvements to boost visibility based on recent analysis</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { title: "Definitional Clarity", impact: "High", desc: "Add structured definition blocks for core entities to capture AI dictionary queries." },
-                  { title: "Semantic Depth", impact: "Medium", desc: "Expand on sub-topics with high semantic density to improve topical authority." },
-                  { title: "Citation Signals", impact: "High", desc: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
-                ].map((opt, i) => (
-                  <div key={i} className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 group hover:border-blue-500/50 transition-all">
+                {metrics.optimizationOpportunities.map((opt, i) => (
+                  <div key={i} className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 group hover:border-blue-500/50 transition-all hover:-translate-y-1">
                     <div className="flex justify-between items-start mb-3">
                       <h4 className="font-bold text-foreground group-hover:text-blue-400 transition-colors">{opt.title}</h4>
                       <span className={cn("text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded", opt.impact === 'High' ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500')}>
                         {opt.impact} Impact
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-4">{opt.desc}</p>
-                    <button className="text-[10px] font-black uppercase text-blue-500 hover:text-blue-400 transition-colors flex items-center gap-1">
-                      Execute Optimization
-                      <ArrowUpRight className="w-3 h-3" />
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-6">{opt.description}</p>
+                    <button className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-[10px] font-black uppercase text-blue-500 hover:text-blue-400 transition-all rounded-lg flex items-center justify-center gap-2">
+                      Execute Task
+                      <ArrowRight className="w-3 h-3" />
                     </button>
                   </div>
                 ))}
