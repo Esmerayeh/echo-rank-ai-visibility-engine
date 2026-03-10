@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 import aiRoutes from "./routes/ai.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 const app = new Hono();
 // set security HTTP headers only in production
 if (process.env.NODE_ENV === 'production')
@@ -25,6 +26,7 @@ app.get('/health', c => {
 });
 // Mount routes
 app.route('/ai', aiRoutes);
+app.route('/auth', authRoutes);
 // send back a 404 error for any unknown api request
 app.notFound(() => {
     throw new ApiError(404, 'Not found');

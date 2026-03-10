@@ -5,6 +5,7 @@ import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 
 import aiRoutes from './routes/ai.routes.ts';
+import authRoutes from './routes/auth.routes.ts';
 
 const app = new Hono();
 
@@ -33,6 +34,7 @@ app.get('/health', c => {
 
 // Mount routes
 app.route('/ai', aiRoutes);
+app.route('/auth', authRoutes);
 
 // send back a 404 error for any unknown api request
 app.notFound(() => {

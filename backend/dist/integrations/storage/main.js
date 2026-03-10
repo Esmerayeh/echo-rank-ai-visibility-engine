@@ -3,7 +3,7 @@ let storage = null;
 export const getStorageProvider = () => {
     if (!storage) {
         storage = new Storage({
-            provider: process.env.STORAGE_PROVIDER || InfraProvider.GCP,
+            provider: process.env.INFRA_PROVIDER || InfraProvider.GCP,
         });
     }
     return storage;

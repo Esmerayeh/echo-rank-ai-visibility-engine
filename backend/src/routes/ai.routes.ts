@@ -2,10 +2,19 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { getInstance as getLlmInstance } from '../integrations/llm/main.ts';
+import { Storage, InfraProvider } from '@uptiqai/integrations-sdk';
+import { optionalAuthMiddleware } from '../middlewares/authMiddleware.ts';
 import prisma from '../client.ts';
 import crypto from 'crypto';
 
-const aiRoutes = new Hono();
+const aiRoutes = new Hono<{
+  Variables: {
+    userId?: string;
+    userEmail?: string;
+  }
+}>();
+
+aiRoutes.use('*', optionalAuthMiddleware);
 
 const analyzeSchema = z.object({
   type: z.enum(['url', 'article', 'competitor']),
@@ -150,15 +159,28 @@ async function runDeepAnalysis(analysisId: string, body: any) {
 
 aiRoutes.post('/analyze', zValidator('json', analyzeSchema), async (c) => {
   const body = c.req.valid('json');
+  const userId = c.get('userId');
   const hash = calculateHash(body);
 
-  // Check cache
+  // Check cache (global or per user? let's do global for deep analysis, but associate this one with user)
   const cached = await prisma.analysis.findFirst({
     where: { contentHash: hash, isDeleted: false, isDeepAnalysisComplete: true },
     orderBy: { createdAt: 'desc' }
   });
 
   if (cached) {
+    // Associate with user if logged in
+    if (userId) {
+      const { id, createdAt, updatedAt, userId: cachedUserId, ...rest } = cached;
+      await prisma.analysis.create({
+        data: {
+          ...rest,
+          userId: userId,
+          isDeepAnalysisComplete: true,
+        } as any
+      });
+    }
+
     return c.json({
       id: cached.id,
       isDeepAnalysisComplete: true,
@@ -181,6 +203,7 @@ aiRoutes.post('/analyze', zValidator('json', analyzeSchema), async (c) => {
   // Create record
   const analysis = await prisma.analysis.create({
     data: {
+      userId: userId,
       type: body.type,
       url: body.url,
       content: body.content,
@@ -236,8 +259,15 @@ aiRoutes.get('/analysis/:id', async (c) => {
 });
 
 aiRoutes.get('/dashboard-metrics', async (c) => {
+  const userId = c.get('userId');
+  
+  const whereClause: any = { isDeleted: false };
+  if (userId) {
+    whereClause.userId = userId;
+  }
+
   const analyses = await prisma.analysis.findMany({
-    where: { isDeleted: false },
+    where: whereClause,
     orderBy: { createdAt: 'desc' },
     take: 10
   });
@@ -348,8 +378,14 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
 });
 
 aiRoutes.get('/history', async (c) => {
+  const userId = c.get('userId');
+  const whereClause: any = { isDeleted: false };
+  if (userId) {
+    whereClause.userId = userId;
+  }
+
   const history = await prisma.analysis.findMany({
-    where: { isDeleted: false },
+    where: whereClause,
     orderBy: { createdAt: 'desc' },
     take: 20
   });
@@ -541,11 +577,59 @@ const exportSchema = z.object({
 });
 
 aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
-  return c.json({ url: '#' });
+  const { content, fileName, fileType } = c.req.valid('json');
+  
+  const storage = new Storage({ provider: process.env.INFRA_PROVIDER as InfraProvider });
+  
+  try {
+    const base64Data = Buffer.from(content).toString('base64');
+    const key = `exports/${Date.now()}-${fileName}`;
+    
+    await storage.uploadData({
+      data: base64Data,
+      destinationKey: key,
+      contentType: fileType === 'pdf' ? 'application/pdf' : 'text/plain',
+    });
+    
+    const { url } = await storage.generateDownloadSignedUrl({
+      key: key,
+      fileName: fileName
+    });
+    
+    return c.json({ url });
+  } catch (error) {
+    console.error('Export failed:', error);
+    return c.json({ error: 'Export failed' }, 500);
+  }
 });
 
 aiRoutes.post('/upload', async (c) => {
-  return c.json({ url: '#' });
+  const formData = await c.req.formData();
+  const file = formData.get('file');
+
+  if (!file || !(file instanceof Blob)) {
+    return c.json({ error: 'No file uploaded' }, 400);
+  }
+
+  const storage = new Storage({ provider: process.env.INFRA_PROVIDER as InfraProvider });
+  
+  try {
+    const key = `uploads/${Date.now()}-${(file as any).name || 'upload'}`;
+    const result = await storage.uploadFile({
+      file: file as Blob,
+      destinationKey: key,
+    });
+    
+    // Generate signed URL for immediate access if needed
+    const { url } = await storage.generateDownloadSignedUrl({
+      key: result.key
+    });
+    
+    return c.json({ url, key: result.key });
+  } catch (error) {
+    console.error('Upload failed:', error);
+    return c.json({ error: 'Upload failed' }, 500);
+  }
 });
 
 export default aiRoutes;

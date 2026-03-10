@@ -8,9 +8,11 @@ import {
   MessageSquare,
   Settings,
   Shield,
-  Zap
+  Zap,
+  LogOut
 } from 'lucide-react';
 import { cn } from '../ui/Card';
+import { authService } from '../../services/auth.service';
 
 interface SidebarProps {
   activeTab: string;
@@ -27,6 +29,11 @@ const navItems = [
 ];
 
 export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
+  const handleLogout = () => {
+    authService.logout();
+    window.location.reload();
+  };
+
   return (
     <div className="w-64 border-r border-border bg-sidebar flex flex-col h-screen sticky top-0">
       <div className="p-6 flex items-center gap-3">
@@ -58,10 +65,17 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-border space-y-1">
         <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
           <Settings className="w-4 h-4" />
           Settings
+        </button>
+        <button 
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Logout
         </button>
         <div className="mt-4 p-4 bg-accent/50 rounded-xl border border-border">
           <div className="flex items-center gap-2 mb-2">
