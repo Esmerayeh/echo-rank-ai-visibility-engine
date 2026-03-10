@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { getInstance as getLlmInstance } from '../integrations/llm/main.ts';
-import { getStorageProvider } from '../integrations/storage/main.ts';
 import prisma from '../client.ts';
 import crypto from 'crypto';
 
@@ -143,20 +142,6 @@ async function runDeepAnalysis(analysisId: string, body: any) {
           isDeepAnalysisComplete: true,
         }
       });
-
-      // Optionally store the detailed result in GCP storage as a backup or report
-      try {
-        const storage = getStorageProvider();
-        const jsonContent = JSON.stringify(result, null, 2);
-        const buffer = Buffer.from(jsonContent);
-        const blob = new Blob([buffer], { type: 'application/json' });
-        await storage.uploadFile({
-          file: blob as any,
-          destinationKey: `analysis-${analysisId}.json`,
-        });
-      } catch (storageError) {
-        console.error('Failed to store analysis report in GCP storage:', storageError);
-      }
     }
   } catch (error) {
     console.error('Deep analysis failed:', error);
@@ -556,42 +541,11 @@ const exportSchema = z.object({
 });
 
 aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
-  const body = c.req.valid('json');
-  const storage = getStorageProvider();
-  const buffer = Buffer.from(body.content);
-  const blob = new Blob([buffer], { type: body.fileType });
-  
-  const uploadResponse = await storage.uploadFile({
-    file: blob as any,
-    destinationKey: `exports/${Date.now()}-${body.fileName}`,
-  });
-
-  const urlResponse = await storage.generateDownloadSignedUrl({
-    key: uploadResponse.key,
-  });
-
-  return c.json({ url: urlResponse.url });
+  return c.json({ url: '#' });
 });
 
 aiRoutes.post('/upload', async (c) => {
-  const formData = await c.req.formData();
-  const file = formData.get('file') as File;
-  if (!file) throw new Error('No file provided');
-
-  const storage = getStorageProvider();
-  const buffer = await file.arrayBuffer();
-  const blob = new Blob([buffer], { type: file.type });
-  
-  const uploadResponse = await storage.uploadFile({
-    file: blob as any,
-    destinationKey: `uploads/${Date.now()}-${file.name}`,
-  });
-
-  const urlResponse = await storage.generateDownloadSignedUrl({
-    key: uploadResponse.key,
-  });
-
-  return c.json({ url: urlResponse.url });
+  return c.json({ url: '#' });
 });
 
 export default aiRoutes;

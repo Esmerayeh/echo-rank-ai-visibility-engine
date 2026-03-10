@@ -47,19 +47,11 @@ Simulates an AI answer and ranking.
 
 
 ### POST /export
-
-Generates and uploads a file to storage.
-
+Generates content for export.
 - Body: `{ content: string, fileName: string, fileType: string }`
-
-- Returns: `{ url: string }`
-
-
+- Returns: `{ url: string }` (Returns '#' for local fallback)
 
 ### POST /upload
-
-Uploads a file to storage.
-
+Placeholder for file uploads.
 - Body: `FormData` (file: File)
-
-- Returns: `{ url: string }`
+- Returns: `{ url: string }` (Returns '#' for local fallback)

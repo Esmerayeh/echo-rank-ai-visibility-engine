@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { getInstance as getLlmInstance } from "../integrations/llm/main.js";
-import { getStorageProvider } from "../integrations/storage/main.js";
 import prisma from "../client.js";
 import crypto from 'crypto';
 const aiRoutes = new Hono();
@@ -131,20 +130,6 @@ async function runDeepAnalysis(analysisId, body) {
                     isDeepAnalysisComplete: true,
                 }
             });
-            // Optionally store the detailed result in GCP storage as a backup or report
-            try {
-                const storage = getStorageProvider();
-                const jsonContent = JSON.stringify(result, null, 2);
-                const buffer = Buffer.from(jsonContent);
-                const blob = new Blob([buffer], { type: 'application/json' });
-                await storage.uploadFile({
-                    file: blob,
-                    destinationKey: `analysis-${analysisId}.json`,
-                });
-            }
-            catch (storageError) {
-                console.error('Failed to store analysis report in GCP storage:', storageError);
-            }
         }
     }
     catch (error) {
@@ -501,34 +486,9 @@ const exportSchema = z.object({
     fileType: z.string(),
 });
 aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
-    const body = c.req.valid('json');
-    const storage = getStorageProvider();
-    const buffer = Buffer.from(body.content);
-    const blob = new Blob([buffer], { type: body.fileType });
-    const uploadResponse = await storage.uploadFile({
-        file: blob,
-        destinationKey: `exports/${Date.now()}-${body.fileName}`,
-    });
-    const urlResponse = await storage.generateDownloadSignedUrl({
-        key: uploadResponse.key,
-    });
-    return c.json({ url: urlResponse.url });
+    return c.json({ url: '#' });
 });
 aiRoutes.post('/upload', async (c) => {
-    const formData = await c.req.formData();
-    const file = formData.get('file');
-    if (!file)
-        throw new Error('No file provided');
-    const storage = getStorageProvider();
-    const buffer = await file.arrayBuffer();
-    const blob = new Blob([buffer], { type: file.type });
-    const uploadResponse = await storage.uploadFile({
-        file: blob,
-        destinationKey: `uploads/${Date.now()}-${file.name}`,
-    });
-    const urlResponse = await storage.generateDownloadSignedUrl({
-        key: uploadResponse.key,
-    });
-    return c.json({ url: urlResponse.url });
+    return c.json({ url: '#' });
 });
 export default aiRoutes;

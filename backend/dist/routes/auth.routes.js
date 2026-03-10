@@ -1,0 +1,47 @@
+import * as authController from "../controllers/authController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+import catchAsync from "../utils/catchAsync.js";
+import { Hono } from 'hono';
+/**
+ * Auth Routes - Define all authentication-related endpoints
+ */
+const authRoutes = new Hono();
+// ========== Public Routes (No Auth Required) ==========
+/**
+ * POST /auth/refresh
+ * Refresh access token
+ * Body: { refreshToken: string }
+ */
+authRoutes.post('/refresh', catchAsync(authController.refreshToken));
+/**
+ * POST /auth/register
+ * Register new user with email and password
+ * Body: { email: string, password: string, name?: string }
+ */
+authRoutes.post('/register', catchAsync(authController.register));
+/**
+ * POST /auth/login
+ * Login with email and password
+ * Body: { email: string, password: string }
+ */
+authRoutes.post('/login', catchAsync(authController.login));
+// ========== Protected Routes (Auth Required) ==========
+/**
+ * GET /auth/me
+ * Get current user information
+ * Requires: Authorization header with valid JWT
+ */
+authRoutes.get('/me', authMiddleware, catchAsync(authController.getCurrentUser));
+/**
+ * GET /auth/identities
+ * Get all linked identity providers for current user
+ * Requires: Authorization header with valid JWT.
+ */
+authRoutes.get('/identities', authMiddleware, catchAsync(authController.getUserIdentities));
+/**
+ * DELETE /auth/identities/:provider
+ * Unlink an identity provider (e.g., 'Google', 'GitHub')
+ * Requires: Authorization header with valid JWT
+ */
+authRoutes.delete('/identities/:provider', authMiddleware, catchAsync(authController.unlinkIdentity));
+export default authRoutes;
