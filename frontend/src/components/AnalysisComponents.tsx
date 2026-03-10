@@ -129,99 +129,99 @@ export const CitationRadar = ({ citationRadar }: { citationRadar: CitationSystem
 
     </CardHeader>
 
-    <CardContent>
+        <CardContent>
 
-      <div className="space-y-10 py-4">
+          <div className="space-y-10 py-4">
 
-        {citationRadar.map((sys, i) => (
+            {citationRadar?.map((sys, i) => (
 
-          <div key={i} className="space-y-4">
+              <div key={i} className="space-y-4">
 
-            <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center">
 
-              <span className="text-xs font-black text-foreground uppercase tracking-widest">{sys.system}</span>
+                  <span className="text-xs font-black text-foreground uppercase tracking-widest">{sys.system}</span>
 
-              <div className="flex gap-1.5 items-end h-4">
+                  <div className="flex gap-1.5 items-end h-4">
 
-                {[1, 2, 3, 4, 5].map((bar) => {
+                    {[1, 2, 3, 4, 5].map((bar) => {
 
-                  const level = sys.likelihood === 'High' ? 5 : sys.likelihood === 'Medium' ? 3 : 1;
+                      const level = sys.likelihood === 'High' ? 5 : sys.likelihood === 'Medium' ? 3 : 1;
 
-                  const isActive = bar <= level;
+                      const isActive = bar <= level;
 
-                  return (
+                      return (
+
+                        <div 
+
+                          key={bar} 
+
+                          className={`w-1.5 rounded-t-sm transition-all duration-700 delay-[${bar * 100}ms] ${
+
+                            isActive 
+
+                              ? sys.likelihood === 'High' ? 'bg-emerald-500' : 
+
+                                sys.likelihood === 'Medium' ? 'bg-yellow-500' : 'bg-red-500'
+
+                              : 'bg-muted'
+
+                          }`}
+
+                          style={{ height: `${bar * 20 + 20}%` }}
+
+                        />
+
+                      );
+
+                    })}
+
+                  </div>
+
+                </div>
+
+                <div className="flex justify-between items-center">
+
+                  <span className={`text-[9px] px-2 py-0.5 rounded-md font-black uppercase tracking-tighter ${
+
+                    sys.likelihood === 'High' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+
+                    sys.likelihood === 'Medium' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
+
+                    'bg-red-500/10 text-red-500 border border-red-500/20'
+
+                  }`}>
+
+                    {sys.likelihood} Probability
+
+                  </span>
+
+                  <div className="h-1 flex-1 mx-4 bg-muted/50 rounded-full overflow-hidden">
 
                     <div 
 
-                      key={bar} 
+                      className={`h-full rounded-full transition-all duration-1000 delay-500 ${
 
-                      className={`w-1.5 rounded-t-sm transition-all duration-700 delay-[${bar * 100}ms] ${
+                        sys.likelihood === 'High' ? 'bg-emerald-500' :
 
-                        isActive 
+                        sys.likelihood === 'Medium' ? 'bg-yellow-500' :
 
-                          ? sys.likelihood === 'High' ? 'bg-emerald-500' : 
-
-                            sys.likelihood === 'Medium' ? 'bg-yellow-500' : 'bg-red-500'
-
-                          : 'bg-muted'
+                        'bg-red-500'
 
                       }`}
 
-                      style={{ height: `${bar * 20 + 20}%` }}
+                      style={{ width: sys.likelihood === 'High' ? '100%' : sys.likelihood === 'Medium' ? '60%' : '20%' }}
 
                     />
 
-                  );
+                  </div>
 
-                })}
-
-              </div>
-
-            </div>
-
-            <div className="flex justify-between items-center">
-
-              <span className={`text-[9px] px-2 py-0.5 rounded-md font-black uppercase tracking-tighter ${
-
-                sys.likelihood === 'High' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-
-                sys.likelihood === 'Medium' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-
-                'bg-red-500/10 text-red-500 border border-red-500/20'
-
-              }`}>
-
-                {sys.likelihood} Probability
-
-              </span>
-
-              <div className="h-1 flex-1 mx-4 bg-muted/50 rounded-full overflow-hidden">
-
-                <div 
-
-                  className={`h-full rounded-full transition-all duration-1000 delay-500 ${
-
-                    sys.likelihood === 'High' ? 'bg-emerald-500' :
-
-                    sys.likelihood === 'Medium' ? 'bg-yellow-500' :
-
-                    'bg-red-500'
-
-                  }`}
-
-                  style={{ width: sys.likelihood === 'High' ? '100%' : sys.likelihood === 'Medium' ? '60%' : '20%' }}
-
-                />
+                </div>
 
               </div>
 
-            </div>
+            ))}
 
           </div>
-
-        ))}
-
-      </div>
 
       <div className="mt-6 pt-6 border-t border-border flex items-start gap-3 bg-muted/20 -mx-6 -mb-6 p-6">
 

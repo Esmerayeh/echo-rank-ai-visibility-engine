@@ -315,42 +315,44 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
   const previous = analyses[1] || latest;
 
   const calculateChange = (current: number, prev: number) => {
-    if (prev === 0) return 0;
+    if (!prev || prev === 0) return 0;
     return parseFloat(((current - prev) / prev * 100).toFixed(1));
   };
 
   const trendData = [...analyses].reverse().map(a => ({
-    name: a.createdAt.toLocaleDateString('en-US', { weekday: 'short' }),
-    score: a.visibilityScore
+    name: a.createdAt ? a.createdAt.toLocaleDateString('en-US', { weekday: 'short' }) : 'Unknown',
+    score: a.visibilityScore || 0
   }));
 
-  const radarData = (latest.radarData as any[]) || [];
-  const categoryData = radarData.map(r => ({ name: r.subject, value: r.A }));
+  const radarData = Array.isArray(latest.radarData) ? latest.radarData : [];
+  const categoryData = radarData.map((r: any) => ({ name: r.subject || 'Unknown', value: r.A || 0 }));
 
-  const rawStrengths = (latest.insights as any[]) || [];
-  const rawWeaknesses = (latest.recommendations as any[]) || [];
+  const rawStrengths = Array.isArray(latest.insights) ? latest.insights : [];
+  const rawWeaknesses = Array.isArray(latest.recommendations) ? latest.recommendations : [];
+
+  const prevWeaknesses = Array.isArray(previous.recommendations) ? previous.recommendations : [];
 
   return c.json({
     isDemo: false,
-    visibilityScore: latest.visibilityScore,
+    visibilityScore: latest.visibilityScore || 0,
     visibilityScoreChange: calculateChange(latest.visibilityScore, previous.visibilityScore),
-    citationProbability: latest.citationProbability,
+    citationProbability: latest.citationProbability || 0,
     citationProbabilityChange: calculateChange(latest.citationProbability, previous.citationProbability),
-    topicAuthority: latest.topicAuthority,
+    topicAuthority: latest.topicAuthority || 0,
     topicAuthorityChange: calculateChange(latest.topicAuthority, previous.topicAuthority),
     optimizationAlerts: rawWeaknesses.length,
-    optimizationAlertsChange: rawWeaknesses.length - ((previous.recommendations as any[]) || []).length,
+    optimizationAlertsChange: rawWeaknesses.length - prevWeaknesses.length,
     trendData,
     categoryData,
     radarData,
-    strengths: rawStrengths.map(s => ({
-      title: s.title,
-      description: s.description
+    strengths: rawStrengths.map((s: any) => ({
+      title: s.title || 'Insight',
+      description: s.description || 'No description available'
     })),
-    weaknesses: rawWeaknesses.filter(w => w.impact === 'high' || w.impact === 'medium').map(w => ({
-      title: w.title,
-      description: w.description,
-      recommendation: `Follow remediation plan for ${w.title}`
+    weaknesses: rawWeaknesses.filter((w: any) => w.impact === 'high' || w.impact === 'medium').map((w: any) => ({
+      title: w.title || 'Weakness',
+      description: w.description || 'No description available',
+      recommendation: w.recommendation || `Follow remediation plan for ${w.title || 'this issue'}`
     })),
     optimizationOpportunities: [
       { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },

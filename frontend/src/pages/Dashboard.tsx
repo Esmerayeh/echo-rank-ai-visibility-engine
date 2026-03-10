@@ -209,7 +209,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                 <div className="flex flex-col md:flex-row items-center gap-8">
                   <div className="relative group/radar w-full md:w-[400px] h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={metrics.radarData}>
+                      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={metrics.radarData || []}>
                         <PolarGrid stroke="#26262c" />
                         <PolarAngleAxis 
                           dataKey="subject" 
@@ -227,7 +227,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                                   </p>
                                   <div className="pt-3 border-t border-zinc-800 flex items-center justify-between">
                                     <span className="text-[10px] font-black uppercase text-zinc-500">Performance</span>
-                                    <span className={cn("text-sm font-black", getScoreColor(data.A))}>{data.A}%</span>
+                                    <span className={cn("text-sm font-black", getScoreColor(data.A || 0))}>{data.A || 0}%</span>
                                   </div>
                                 </div>
                               );
@@ -249,8 +249,8 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                   <div className="flex-1 space-y-6 w-full py-4">
                     <div className="space-y-1">
                       <div className="flex items-end gap-2">
-                        <p className={cn("text-8xl font-black tracking-tighter leading-none", getScoreColor(metrics.visibilityScore))}>
-                          {metrics.visibilityScore}%
+                        <p className={cn("text-8xl font-black tracking-tighter leading-none", getScoreColor(metrics.visibilityScore || 0))}>
+                          {metrics.visibilityScore || 0}%
                         </p>
                       </div>
                       <p className="text-sm text-muted-foreground font-black uppercase tracking-widest">Overall Visibility Index</p>
@@ -260,8 +260,8 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                       <div className="p-5 bg-blue-500/5 rounded-2xl border border-blue-500/10">
                         <p className="text-xs text-blue-400 font-bold uppercase tracking-widest mb-2">AI Summary</p>
                         <p className="text-sm text-foreground font-medium leading-relaxed">
-                          {metrics.visibilityScore >= 70 ? "Your content demonstrates exceptional semantic alignment with RAG retrieval architectures." : 
-                           metrics.visibilityScore >= 40 ? "Moderate visibility. We've detected critical semantic gaps in definition blocks and topic coverage." : 
+                          {(metrics.visibilityScore || 0) >= 70 ? "Your content demonstrates exceptional semantic alignment with RAG retrieval architectures." : 
+                           (metrics.visibilityScore || 0) >= 40 ? "Moderate visibility. We've detected critical semantic gaps in definition blocks and topic coverage." : 
                            "Critical visibility issues. Current content structure may cause LLMs to omit your information from generated responses."}
                         </p>
                       </div>
@@ -369,7 +369,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                   >
                     <CardContent className="pt-0 pb-6">
                       <div className="space-y-4">
-                        {metrics.strengths.map((strength, i) => (
+                        {metrics.strengths?.map((strength, i) => (
                           <div key={i} className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10 hover:bg-emerald-500/10 transition-colors">
                             <div className="flex items-start gap-3">
                               <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
@@ -388,7 +388,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
               {!expandedStrengths && (
                 <CardContent className="pt-0 pb-4">
                   <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-2">
-                    {metrics.strengths.length} critical strengths detected
+                    {metrics.strengths?.length || 0} critical strengths detected
                   </p>
                 </CardContent>
               )}
@@ -419,7 +419,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
                   >
                     <CardContent className="pt-0 pb-6">
                       <div className="space-y-4">
-                        {metrics.weaknesses.map((weakness, i) => (
+                        {metrics.weaknesses?.map((weakness, i) => (
                           <div key={i} className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 transition-colors">
                             <div className="flex items-start gap-3">
                               <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5 text-red-500">
@@ -444,7 +444,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
               {!expandedWeaknesses && (
                 <CardContent className="pt-0 pb-4">
                   <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-2">
-                    {metrics.weaknesses.length} critical weaknesses detected
+                    {metrics.weaknesses?.length || 0} critical weaknesses detected
                   </p>
                 </CardContent>
               )}
@@ -467,7 +467,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {metrics.optimizationOpportunities.map((opt, i) => (
+                {metrics.optimizationOpportunities?.map((opt, i) => (
                   <div key={i} className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 group hover:border-blue-500/50 transition-all hover:-translate-y-1">
                     <div className="flex justify-between items-start mb-3">
                       <h4 className="font-bold text-foreground group-hover:text-blue-400 transition-colors">{opt.title}</h4>
@@ -497,7 +497,7 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
             <CardContent>
               <div className="h-[300px] w-full mt-4">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={metrics.trendData}>
+                  <AreaChart data={metrics.trendData || []}>
                     <defs>
                       <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />

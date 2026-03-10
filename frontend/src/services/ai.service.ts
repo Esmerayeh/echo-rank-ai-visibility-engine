@@ -259,10 +259,15 @@ export const aiService = {
     
     try {
       const response = await api.get('/ai/dashboard-metrics');
-      if (!response.data || (response.data.visibilityScore === 0 && !response.data.history?.length)) {
+      const data = response.data;
+      
+      // Strict validation of the response data
+      if (!data || typeof data.visibilityScore === 'undefined' || !data.radarData || !data.strengths) {
+        console.warn('Incomplete dashboard data received, falling back to mock');
         return mockDashboard;
       }
-      return response.data;
+      
+      return data;
     } catch (error) {
       console.error('Failed to fetch dashboard metrics, falling back to demo data:', error);
       return mockDashboard;
@@ -287,8 +292,13 @@ export const aiService = {
 
   getAnalysisHistory: async (): Promise<HistoryItem[]> => {
     if (MOCK_DATA) return mockDashboard.history || [];
-    const response = await api.get('/ai/history');
-    return response.data;
+    try {
+      const response = await api.get('/ai/history');
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+      console.error('Failed to fetch analysis history:', error);
+      return [];
+    }
   },
 
   analyze: async (payload: AnalysisPayload): Promise<AnalysisResult> => {
