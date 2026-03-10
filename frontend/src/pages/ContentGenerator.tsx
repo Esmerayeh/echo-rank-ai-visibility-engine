@@ -8,6 +8,7 @@ export function ContentGenerator() {
   const [audience, setAudience] = useState('');
   const [goal, setGoal] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [generated, setGenerated] = useState<GenerationResult | null>(null);
 
   const handleGenerate = async () => {
@@ -19,6 +20,41 @@ export function ContentGenerator() {
       console.error('Generation failed:', error);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleExport = async () => {
+    if (!generated) return;
+    setIsExporting(true);
+    try {
+      const content = `
+# ${generated.title}
+
+## Article
+${generated.article}
+
+## FAQ
+${generated.faq.map(item => `Q: ${item.question}\nA: ${item.answer}`).join('\n\n')}
+
+## Citation Paragraphs
+${generated.citationReadyParagraphs.map(p => `- "${p}"`).join('\n')}
+      `;
+      const { url } = await aiService.exportContent(content, `${topic.replace(/\s+/g, '_')}_optimized.md`, 'text/markdown');
+      if (url === '#') {
+        const blob = new Blob([content], { type: 'text/markdown' });
+        const dummyUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = dummyUrl;
+        a.download = `${topic.replace(/\s+/g, '_')}_optimized.md`;
+        a.click();
+        URL.revokeObjectURL(dummyUrl);
+      } else {
+        window.open(url, '_blank');
+      }
+    } catch (error) {
+      console.error('Export failed:', error);
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -116,8 +152,12 @@ export function ContentGenerator() {
                     <Copy className="w-4 h-4" />
                     Copy All
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-foreground rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors">
-                    <Download className="w-4 h-4" />
+                  <button 
+                    onClick={handleExport}
+                    disabled={isExporting}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-foreground rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  >
+                    {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                     Export
                   </button>
                 </div>

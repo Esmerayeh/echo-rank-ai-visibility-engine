@@ -268,6 +268,22 @@ export const aiService = {
     }
   },
 
+  exportContent: async (content: string, fileName: string, fileType?: string): Promise<{ url: string }> => {
+    if (MOCK_DATA) return { url: '#' };
+    const response = await api.post('/ai/export', { content, fileName, fileType });
+    return response.data;
+  },
+
+  uploadFile: async (file: File): Promise<{ url: string }> => {
+    if (MOCK_DATA) return { url: '#' };
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/ai/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
+  },
+
   getAnalysisHistory: async (): Promise<HistoryItem[]> => {
     if (MOCK_DATA) return mockDashboard.history || [];
     const response = await api.get('/ai/history');

@@ -34,6 +34,29 @@ Generates AI-optimized content.
 - Returns: Structured article with FAQs.
 
 ### POST /simulate
+
 Simulates an AI answer and ranking.
+
 - Body: `{ question: string }`
+
 - Returns: Simulated answer and visibility suggestions.
+
+
+
+### POST /export
+
+Generates and uploads a file to storage.
+
+- Body: `{ content: string, fileName: string, fileType: string }`
+
+- Returns: `{ url: string }`
+
+
+
+### POST /upload
+
+Uploads a file to storage.
+
+- Body: `FormData` (file: File)
+
+- Returns: `{ url: string }`

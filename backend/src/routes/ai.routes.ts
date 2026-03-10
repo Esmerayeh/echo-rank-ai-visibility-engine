@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
-import { Llm, LlmProvider } from '@uptiqai/integrations-sdk';
+import { getInstance as getLlmInstance } from '../integrations/llm/main.ts';
+import { getStorageProvider } from '../integrations/storage/main.ts';
 import prisma from '../client.ts';
 import crypto from 'crypto';
 
@@ -34,7 +35,7 @@ function runPreliminaryHeuristics(content: string = ''): any {
   const wordCount = content.split(/\s+/).length;
   const linkCount = (content.match(/<a\s/g) || []).length || (content.match(/\[.*\]\(.*\)/g) || []).length;
 
-  let score = 50; // Base score
+  let score = 55; // Base score
   score += Math.min(h2Count * 5, 15);
   score += Math.min(h3Count * 2, 10);
   score += Math.min(definitionSignals * 10, 20);
@@ -50,29 +51,33 @@ function runPreliminaryHeuristics(content: string = ''): any {
       topicAuthority: Math.floor(finalScore * 0.7),
     },
     radarData: [
-      { "subject": "Clarity", "A": finalScore - 5, "fullMark": 100 },
-      { "subject": "Structure", "A": finalScore + 5, "fullMark": 100 },
-      { "subject": "Authority", "A": finalScore - 10, "fullMark": 100 },
-      { "subject": "Depth", "A": finalScore - 2, "fullMark": 100 },
-      { "subject": "Definitions", "A": finalScore + 8, "fullMark": 100 }
+      { subject: "Clarity", A: finalScore - 5, fullMark: 100 },
+      { subject: "Structure", A: finalScore + 5, fullMark: 100 },
+      { subject: "Authority", A: finalScore - 10, fullMark: 100 },
+      { subject: "Depth", A: finalScore - 2, fullMark: 100 },
+      { subject: "Definitions", A: finalScore + 8, fullMark: 100 }
     ],
-    insights: [],
-    recommendations: [],
+    insights: [
+      { title: "Preliminary Content Structure", description: "Found " + h2Count + " major headings.", opportunity: "Increase heading density for better semantic parsing." }
+    ],
+    recommendations: [
+      { title: "Increase Semantic Depth", description: "Current word count is " + wordCount + ".", impact: "high" }
+    ],
     citationRadar: [
-      { "system": "ChatGPT", "likelihood": finalScore > 70 ? "High" : finalScore > 40 ? "Medium" : "Low" },
-      { "system": "Perplexity", "likelihood": finalScore > 75 ? "High" : finalScore > 45 ? "Medium" : "Low" },
-      { "system": "Claude", "likelihood": finalScore > 70 ? "High" : finalScore > 40 ? "Medium" : "Low" },
-      { "system": "Gemini", "likelihood": finalScore > 65 ? "High" : finalScore > 35 ? "Medium" : "Low" }
+      { system: "ChatGPT", likelihood: finalScore > 70 ? "High" : finalScore > 40 ? "Medium" : "Low" },
+      { system: "Perplexity", likelihood: finalScore > 75 ? "High" : finalScore > 45 ? "Medium" : "Low" },
+      { system: "Claude", likelihood: finalScore > 70 ? "High" : finalScore > 40 ? "Medium" : "Low" },
+      { system: "Gemini", likelihood: finalScore > 65 ? "High" : finalScore > 35 ? "Medium" : "Low" }
     ],
   };
 }
 
 async function runDeepAnalysis(analysisId: string, body: any) {
   try {
-    const llm = new Llm({ provider: (process.env.LLM_PROVIDER as LlmProvider) || LlmProvider.Google });
+    const llm = getLlmInstance();
 
     const prompt = `
-      Analyze the following content for AI Visibility and Citation Likelihood.
+      Analyze the following content for AI Visibility and LLM Citation Likelihood.
       Type: ${body.type}
       ${body.url ? `URL: ${body.url}` : ''}
       ${body.content ? `Content: ${body.content}` : ''}
@@ -138,6 +143,20 @@ async function runDeepAnalysis(analysisId: string, body: any) {
           isDeepAnalysisComplete: true,
         }
       });
+
+      // Optionally store the detailed result in GCP storage as a backup or report
+      try {
+        const storage = getStorageProvider();
+        const jsonContent = JSON.stringify(result, null, 2);
+        const base64Data = Buffer.from(jsonContent).toString('base64');
+        await storage.uploadData({
+          data: base64Data,
+          destinationKey: `analysis-${analysisId}.json`,
+          contentType: 'application/json',
+        });
+      } catch (storageError) {
+        console.error('Failed to store analysis report in GCP storage:', storageError);
+      }
     }
   } catch (error) {
     console.error('Deep analysis failed:', error);
@@ -369,7 +388,7 @@ const optimizeSchema = z.object({
 
 aiRoutes.post('/optimize', zValidator('json', optimizeSchema), async (c) => {
   const body = c.req.valid('json');
-  const llm = new Llm({ provider: (process.env.LLM_PROVIDER as LlmProvider) || LlmProvider.Google });
+  const llm = getLlmInstance();
 
   const prompt = `
     Optimize the following article for AI Visibility and LLM Citation.
@@ -411,7 +430,7 @@ aiRoutes.get('/topic-map', async (c) => {
     orderBy: { createdAt: 'desc' }
   });
 
-  const llm = new Llm({ provider: (process.env.LLM_PROVIDER as LlmProvider) || LlmProvider.Google });
+  const llm = getLlmInstance();
   const prompt = `
     Based on this content: "${latestAnalysis?.content || latestAnalysis?.url || 'General AI visibility'}", 
     extract a list of main topics and their authority metrics for a Topic Authority Map.
@@ -449,7 +468,7 @@ const generateSchema = z.object({
 
 aiRoutes.post('/generate', zValidator('json', generateSchema), async (c) => {
   const body = c.req.valid('json');
-  const llm = new Llm({ provider: (process.env.LLM_PROVIDER as LlmProvider) || LlmProvider.Google });
+  const llm = getLlmInstance();
 
   const prompt = `
     Generate high-authority content engineered for LLM citation.
@@ -495,7 +514,7 @@ aiRoutes.post('/simulate', zValidator('json', simulateSchema), async (c) => {
     orderBy: { createdAt: 'desc' }
   });
 
-  const llm = new Llm({ provider: (process.env.LLM_PROVIDER as LlmProvider) || LlmProvider.Google });
+  const llm = getLlmInstance();
 
   const prompt = `
     Simulate an AI-generated answer to this question: "${body.question}"
@@ -526,4 +545,158 @@ aiRoutes.post('/simulate', zValidator('json', simulateSchema), async (c) => {
   return c.json(JSON.parse(jsonMatch[0]));
 });
 
+const exportSchema = z.object({
+  content: z.string(),
+  fileName: z.string(),
+  fileType: z.string(),
+});
+
+aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
+  const body = c.req.valid('json');
+  const storage = getStorageProvider();
+  const buffer = Buffer.from(body.content);
+  const blob = new Blob([buffer], { type: body.fileType });
+  
+  const uploadResponse = await storage.uploadFile({
+    file: blob as any,
+    destinationKey: `exports/${Date.now()}-${body.fileName}`,
+  });
+
+  const urlResponse = await storage.generateDownloadSignedUrl({
+    key: uploadResponse.key,
+  });
+
+  return c.json({ url: urlResponse.url });
+});
+
+aiRoutes.post('/upload', async (c) => {
+  const formData = await c.req.formData();
+  const file = formData.get('file') as File;
+  if (!file) throw new Error('No file provided');
+
+  const storage = getStorageProvider();
+  const buffer = await file.arrayBuffer();
+  const blob = new Blob([buffer], { type: file.type });
+  
+  const uploadResponse = await storage.uploadFile({
+    file: blob as any,
+    destinationKey: `uploads/${Date.now()}-${file.name}`,
+  });
+
+  const urlResponse = await storage.generateDownloadSignedUrl({
+    key: uploadResponse.key,
+  });
+
+  return c.json({ url: urlResponse.url });
+});
+
 export default aiRoutes;
+
+  
+  
+  
+  const exportSchema = z.object({
+  
+    content: z.string(),
+  
+    fileName: z.string(),
+  
+    fileType: z.string().optional(),
+  
+  });
+  
+  
+  
+  aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
+  
+    const body = c.req.valid('json');
+  
+    const storage = getStorageProvider();
+  
+    
+  
+    const base64Data = Buffer.from(body.content).toString('base64');
+  
+    const destinationKey = `exports/${Date.now()}-${body.fileName}`;
+  
+    
+  
+    await storage.uploadData({
+  
+      data: base64Data,
+  
+      destinationKey,
+  
+      contentType: body.fileType || 'text/plain',
+  
+    });
+  
+    
+  
+    const { url } = await storage.generateDownloadSignedUrl({
+  
+      key: destinationKey,
+  
+      fileName: body.fileName,
+  
+    });
+  
+    
+  
+    return c.json({ url });
+  
+  });
+  
+  
+  
+  aiRoutes.post('/upload', async (c) => {
+  
+    const body = await c.req.parseBody();
+  
+    const file = body.file as any;
+  
+    if (!file) throw new Error('No file provided');
+  
+    
+  
+    const storage = getStorageProvider();
+  
+    const arrayBuffer = await file.arrayBuffer();
+  
+    const base64Data = Buffer.from(arrayBuffer).toString('base64');
+  
+    const destinationKey = `uploads/${Date.now()}-${file.name}`;
+  
+    
+  
+    await storage.uploadData({
+  
+      data: base64Data,
+  
+      destinationKey,
+  
+      contentType: file.type,
+  
+    });
+  
+    
+  
+    const { url } = await storage.generateDownloadSignedUrl({
+  
+      key: destinationKey,
+  
+      fileName: file.name,
+  
+    });
+  
+    
+  
+    return c.json({ url });
+  
+  });
+  
+  
+  
+  export default aiRoutes;
+  
+  
