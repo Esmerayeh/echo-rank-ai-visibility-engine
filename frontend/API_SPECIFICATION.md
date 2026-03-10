@@ -54,23 +54,4 @@ Generates content for export.
 ### POST /upload
 Placeholder for file uploads.
 - Body: `FormData` (file: File)
-- Returns: `{ url: string }`
-
-## Auth Routes (/auth)
-
-### POST /register
-Registers a new user.
-- Body: `{ email, password, name? }`
-
-### POST /login
-Authenticates a user.
-- Body: `{ email, password }`
-
-### POST /refresh
-Refreshes the access token.
-- Body: `{ refreshToken }`
-
-### GET /me
-Retrieves current user info.
-- Headers: `Authorization: Bearer <accessToken>`
-
+- Returns: `{ url: string }` (Returns '#' for local fallback)

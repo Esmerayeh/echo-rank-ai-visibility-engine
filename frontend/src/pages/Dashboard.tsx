@@ -175,14 +175,17 @@ export function Dashboard({ onNewAnalysis }: DashboardProps) {
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-bold text-foreground tracking-tight">AI Visibility Dashboard</h1>
               {metrics.isDemo && (
-                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-black uppercase tracking-widest border border-blue-500/20">
-                  Demo Analysis
-                </span>
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 animate-pulse">
+                  <AlertCircle className="w-3 h-3" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">
+                    Demo Analysis
+                  </span>
+                </div>
               )}
             </div>
             <p className="text-muted-foreground mt-1 text-sm">
               {metrics.isDemo 
-                ? "Analyzing sample data for openai.com/blog"
+                ? "Showing sample optimization data for openai.com/blog"
                 : "Real-time AI visibility and semantic authority metrics."}
             </p>
           </div>

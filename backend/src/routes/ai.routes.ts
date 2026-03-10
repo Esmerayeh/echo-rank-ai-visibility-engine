@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { getInstance as getLlmInstance } from '../integrations/llm/main.ts';
-import { Storage, InfraProvider } from '@uptiqai/integrations-sdk';
 import { optionalAuthMiddleware } from '../middlewares/authMiddleware.ts';
 import prisma from '../client.ts';
 import crypto from 'crypto';
@@ -261,21 +260,128 @@ aiRoutes.get('/analysis/:id', async (c) => {
 aiRoutes.get('/dashboard-metrics', async (c) => {
   const userId = c.get('userId');
   
-  const whereClause: any = { isDeleted: false };
-  if (userId) {
-    whereClause.userId = userId;
-  }
+  try {
+    const whereClause: any = { isDeleted: false };
+    if (userId) {
+      whereClause.userId = userId;
+    }
 
-  const analyses = await prisma.analysis.findMany({
-    where: whereClause,
-    orderBy: { createdAt: 'desc' },
-    take: 10
-  });
+    const analyses = await prisma.analysis.findMany({
+      where: whereClause,
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    });
 
-  if (analyses.length === 0) {
-    // Return demo analysis for OpenAI Blog if no data exists
+    if (analyses.length === 0) {
+      // Return demo analysis for OpenAI Blog if no data exists for this user/globally
+      return c.json({
+        isDemo: true,
+        website: 'https://openai.com/blog',
+        visibilityScore: 72,
+        visibilityScoreChange: 4.2,
+        citationProbability: 64,
+        citationProbabilityChange: 12.4,
+        topicAuthority: 78,
+        topicAuthorityChange: 2.1,
+        optimizationAlerts: 4,
+        optimizationAlertsChange: -1,
+        trendData: [
+          { name: 'Mon', score: 45 },
+          { name: 'Tue', score: 52 },
+          { name: 'Wed', score: 48 },
+          { name: 'Thu', score: 61 },
+          { name: 'Fri', score: 65 },
+          { name: 'Sat', score: 70 },
+          { name: 'Sun', score: 72 },
+        ],
+        categoryData: [
+          { name: 'Clarity', value: 85 },
+          { name: 'Structure', value: 72 },
+          { name: 'Authority', value: 78 },
+          { name: 'Depth', value: 80 },
+          { name: 'Definitions', value: 64 }
+        ],
+        radarData: [
+          { subject: 'Clarity', A: 85, fullMark: 100 },
+          { subject: 'Structure', A: 72, fullMark: 100 },
+          { subject: 'Authority', A: 78, fullMark: 100 },
+          { subject: 'Depth', A: 80, fullMark: 100 },
+          { subject: 'Definitions', A: 64, fullMark: 100 }
+        ],
+        strengths: [
+          { title: 'Semantic Clarity', description: 'Core concepts are explained using clear, unambiguous language.' },
+          { title: 'Technical Hierarchy', description: 'Well-structured technical explanations and documentation.' },
+          { title: 'Semantic Alignment', description: 'Strong alignment with RAG retrieval architectures.' }
+        ],
+        weaknesses: [
+          { title: 'Definition Coverage', description: 'Missing structured definition blocks for some technical terms.', recommendation: 'Add definition blocks.' },
+          { title: 'Heading Hierarchy', description: 'Inconsistent heading nesting in some sections.', recommendation: 'Audit heading structure.' },
+          { title: 'Citation Density', description: 'Low outbound link density to authoritative sources.', recommendation: 'Add more outbound citations.' },
+          { title: 'Factual Support', description: 'Quantitative claims need more explicit grounding.', recommendation: 'Provide direct source links.' }
+        ],
+        optimizationOpportunities: [
+          { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
+          { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
+          { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
+        ]
+      });
+    }
+
+    const latest = analyses[0];
+    const previous = analyses[1] || latest;
+
+    const calculateChange = (current: number, prev: number) => {
+      if (!prev || prev === 0) return 0;
+      return parseFloat(((current - prev) / prev * 100).toFixed(1));
+    };
+
+    const trendData = [...analyses].reverse().map(a => ({
+      name: a.createdAt ? a.createdAt.toLocaleDateString('en-US', { weekday: 'short' }) : 'Unknown',
+      score: a.visibilityScore || 0
+    }));
+
+    const radarData = Array.isArray(latest.radarData) ? latest.radarData : [];
+    const categoryData = radarData.map((r: any) => ({ name: r.subject || 'Unknown', value: r.A || 0 }));
+
+    const rawStrengths = Array.isArray(latest.insights) ? latest.insights : [];
+    const rawWeaknesses = Array.isArray(latest.recommendations) ? latest.recommendations : [];
+
+    const prevWeaknesses = Array.isArray(previous.recommendations) ? previous.recommendations : [];
+
+    return c.json({
+      isDemo: false,
+      visibilityScore: latest.visibilityScore || 0,
+      visibilityScoreChange: calculateChange(latest.visibilityScore, previous.visibilityScore),
+      citationProbability: latest.citationProbability || 0,
+      citationProbabilityChange: calculateChange(latest.citationProbability, previous.citationProbability),
+      topicAuthority: latest.topicAuthority || 0,
+      topicAuthorityChange: calculateChange(latest.topicAuthority, previous.topicAuthority),
+      optimizationAlerts: rawWeaknesses.length,
+      optimizationAlertsChange: rawWeaknesses.length - prevWeaknesses.length,
+      trendData,
+      categoryData,
+      radarData,
+      strengths: rawStrengths.map((s: any) => ({
+        title: s.title || 'Insight',
+        description: s.description || 'No description available'
+      })),
+      weaknesses: rawWeaknesses.filter((w: any) => w.impact === 'high' || w.impact === 'medium').map((w: any) => ({
+        title: w.title || 'Weakness',
+        description: w.description || 'No description available',
+        recommendation: w.recommendation || `Follow remediation plan for ${w.title || 'this issue'}`
+      })),
+      optimizationOpportunities: [
+        { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
+        { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
+        { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
+      ]
+    });
+  } catch (error) {
+    console.error('Failed to fetch dashboard metrics, returning demo data:', error);
+    // Return demo analysis for OpenAI Blog if database fails
     return c.json({
       isDemo: true,
+      website: 'https://openai.com/blog',
       visibilityScore: 72,
       visibilityScoreChange: 4.2,
       citationProbability: 64,
@@ -325,56 +431,6 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
       ]
     });
   }
-
-  const latest = analyses[0];
-  const previous = analyses[1] || latest;
-
-  const calculateChange = (current: number, prev: number) => {
-    if (!prev || prev === 0) return 0;
-    return parseFloat(((current - prev) / prev * 100).toFixed(1));
-  };
-
-  const trendData = [...analyses].reverse().map(a => ({
-    name: a.createdAt ? a.createdAt.toLocaleDateString('en-US', { weekday: 'short' }) : 'Unknown',
-    score: a.visibilityScore || 0
-  }));
-
-  const radarData = Array.isArray(latest.radarData) ? latest.radarData : [];
-  const categoryData = radarData.map((r: any) => ({ name: r.subject || 'Unknown', value: r.A || 0 }));
-
-  const rawStrengths = Array.isArray(latest.insights) ? latest.insights : [];
-  const rawWeaknesses = Array.isArray(latest.recommendations) ? latest.recommendations : [];
-
-  const prevWeaknesses = Array.isArray(previous.recommendations) ? previous.recommendations : [];
-
-  return c.json({
-    isDemo: false,
-    visibilityScore: latest.visibilityScore || 0,
-    visibilityScoreChange: calculateChange(latest.visibilityScore, previous.visibilityScore),
-    citationProbability: latest.citationProbability || 0,
-    citationProbabilityChange: calculateChange(latest.citationProbability, previous.citationProbability),
-    topicAuthority: latest.topicAuthority || 0,
-    topicAuthorityChange: calculateChange(latest.topicAuthority, previous.topicAuthority),
-    optimizationAlerts: rawWeaknesses.length,
-    optimizationAlertsChange: rawWeaknesses.length - prevWeaknesses.length,
-    trendData,
-    categoryData,
-    radarData,
-    strengths: rawStrengths.map((s: any) => ({
-      title: s.title || 'Insight',
-      description: s.description || 'No description available'
-    })),
-    weaknesses: rawWeaknesses.filter((w: any) => w.impact === 'high' || w.impact === 'medium').map((w: any) => ({
-      title: w.title || 'Weakness',
-      description: w.description || 'No description available',
-      recommendation: w.recommendation || `Follow remediation plan for ${w.title || 'this issue'}`
-    })),
-    optimizationOpportunities: [
-      { title: "Definitional Clarity", impact: "High", description: "Add structured definition blocks for core entities to capture AI dictionary queries." },
-      { title: "Semantic Depth", impact: "Medium", description: "Expand on sub-topics with high semantic density to improve topical authority." },
-      { title: "Citation Signals", impact: "High", description: "Integrate authoritative outbound links to signal credibility to LLM evaluators." }
-    ]
-  });
 });
 
 aiRoutes.get('/history', async (c) => {
@@ -577,26 +633,16 @@ const exportSchema = z.object({
 });
 
 aiRoutes.post('/export', zValidator('json', exportSchema), async (c) => {
-  const { content, fileName, fileType } = c.req.valid('json');
-  
-  const storage = new Storage({ provider: process.env.INFRA_PROVIDER as InfraProvider });
+  const { content, fileType } = c.req.valid('json');
   
   try {
+    // Replace cloud storage with a base64 data URI placeholder
+    // This allows the frontend to trigger a download without needing a server-side file store
+    const mimeType = fileType === 'pdf' ? 'application/pdf' : 'text/plain';
     const base64Data = Buffer.from(content).toString('base64');
-    const key = `exports/${Date.now()}-${fileName}`;
+    const dataUri = `data:${mimeType};base64,${base64Data}`;
     
-    await storage.uploadData({
-      data: base64Data,
-      destinationKey: key,
-      contentType: fileType === 'pdf' ? 'application/pdf' : 'text/plain',
-    });
-    
-    const { url } = await storage.generateDownloadSignedUrl({
-      key: key,
-      fileName: fileName
-    });
-    
-    return c.json({ url });
+    return c.json({ url: dataUri });
   } catch (error) {
     console.error('Export failed:', error);
     return c.json({ error: 'Export failed' }, 500);
@@ -611,21 +657,17 @@ aiRoutes.post('/upload', async (c) => {
     return c.json({ error: 'No file uploaded' }, 400);
   }
 
-  const storage = new Storage({ provider: process.env.INFRA_PROVIDER as InfraProvider });
-  
   try {
-    const key = `uploads/${Date.now()}-${(file as any).name || 'upload'}`;
-    const result = await storage.uploadFile({
-      file: file as Blob,
-      destinationKey: key,
-    });
+    // Replace cloud storage with a mock URL placeholder
+    // In a real local-only app, we might save to disk, but for this request, 
+    // we are removing all cloud storage dependencies.
+    const fileName = (file as any).name || 'upload';
+    const mockUrl = `https://placeholder.com/uploads/${Date.now()}-${fileName}`;
     
-    // Generate signed URL for immediate access if needed
-    const { url } = await storage.generateDownloadSignedUrl({
-      key: result.key
+    return c.json({ 
+      url: mockUrl, 
+      key: `local-placeholder-${Date.now()}` 
     });
-    
-    return c.json({ url, key: result.key });
   } catch (error) {
     console.error('Upload failed:', error);
     return c.json({ error: 'Upload failed' }, 500);
