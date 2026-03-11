@@ -4699,7 +4699,7 @@ export namespace Prisma {
     targetUrl: string | null
     competitorUrl: string | null
     contentHash: string | null
-    isDeepAnalysisComplete: boolean
+    isDeepAnalysisComplete: boolean | null
     visibilityScore: number | null
     citationProbability: number | null
     topicAuthority: number | null
@@ -4838,7 +4838,7 @@ export namespace Prisma {
       targetUrl: string | null
       competitorUrl: string | null
       contentHash: string | null
-      isDeepAnalysisComplete: boolean
+      isDeepAnalysisComplete: boolean | null
       visibilityScore: number | null
       citationProbability: number | null
       topicAuthority: number | null
@@ -6095,7 +6095,7 @@ export namespace Prisma {
     targetUrl?: StringNullableFilter<"Analysis"> | string | null
     competitorUrl?: StringNullableFilter<"Analysis"> | string | null
     contentHash?: StringNullableFilter<"Analysis"> | string | null
-    isDeepAnalysisComplete?: BoolFilter<"Analysis"> | boolean
+    isDeepAnalysisComplete?: BoolNullableFilter<"Analysis"> | boolean | null
     visibilityScore?: IntNullableFilter<"Analysis"> | number | null
     citationProbability?: IntNullableFilter<"Analysis"> | number | null
     topicAuthority?: IntNullableFilter<"Analysis"> | number | null
@@ -6118,7 +6118,7 @@ export namespace Prisma {
     targetUrl?: SortOrderInput | SortOrder
     competitorUrl?: SortOrderInput | SortOrder
     contentHash?: SortOrderInput | SortOrder
-    isDeepAnalysisComplete?: SortOrder
+    isDeepAnalysisComplete?: SortOrderInput | SortOrder
     visibilityScore?: SortOrderInput | SortOrder
     citationProbability?: SortOrderInput | SortOrder
     topicAuthority?: SortOrderInput | SortOrder
@@ -6144,7 +6144,7 @@ export namespace Prisma {
     targetUrl?: StringNullableFilter<"Analysis"> | string | null
     competitorUrl?: StringNullableFilter<"Analysis"> | string | null
     contentHash?: StringNullableFilter<"Analysis"> | string | null
-    isDeepAnalysisComplete?: BoolFilter<"Analysis"> | boolean
+    isDeepAnalysisComplete?: BoolNullableFilter<"Analysis"> | boolean | null
     visibilityScore?: IntNullableFilter<"Analysis"> | number | null
     citationProbability?: IntNullableFilter<"Analysis"> | number | null
     topicAuthority?: IntNullableFilter<"Analysis"> | number | null
@@ -6167,7 +6167,7 @@ export namespace Prisma {
     targetUrl?: SortOrderInput | SortOrder
     competitorUrl?: SortOrderInput | SortOrder
     contentHash?: SortOrderInput | SortOrder
-    isDeepAnalysisComplete?: SortOrder
+    isDeepAnalysisComplete?: SortOrderInput | SortOrder
     visibilityScore?: SortOrderInput | SortOrder
     citationProbability?: SortOrderInput | SortOrder
     topicAuthority?: SortOrderInput | SortOrder
@@ -6198,7 +6198,7 @@ export namespace Prisma {
     targetUrl?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     competitorUrl?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
     contentHash?: StringNullableWithAggregatesFilter<"Analysis"> | string | null
-    isDeepAnalysisComplete?: BoolWithAggregatesFilter<"Analysis"> | boolean
+    isDeepAnalysisComplete?: BoolNullableWithAggregatesFilter<"Analysis"> | boolean | null
     visibilityScore?: IntNullableWithAggregatesFilter<"Analysis"> | number | null
     citationProbability?: IntNullableWithAggregatesFilter<"Analysis"> | number | null
     topicAuthority?: IntNullableWithAggregatesFilter<"Analysis"> | number | null
@@ -6462,7 +6462,7 @@ export namespace Prisma {
     targetUrl?: string | null
     competitorUrl?: string | null
     contentHash?: string | null
-    isDeepAnalysisComplete?: boolean
+    isDeepAnalysisComplete?: boolean | null
     visibilityScore?: number | null
     citationProbability?: number | null
     topicAuthority?: number | null
@@ -6485,7 +6485,7 @@ export namespace Prisma {
     targetUrl?: string | null
     competitorUrl?: string | null
     contentHash?: string | null
-    isDeepAnalysisComplete?: boolean
+    isDeepAnalysisComplete?: boolean | null
     visibilityScore?: number | null
     citationProbability?: number | null
     topicAuthority?: number | null
@@ -6508,7 +6508,7 @@ export namespace Prisma {
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
-    isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
+    isDeepAnalysisComplete?: NullableBoolFieldUpdateOperationsInput | boolean | null
     visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
     citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
     topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
@@ -6531,7 +6531,7 @@ export namespace Prisma {
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
-    isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
+    isDeepAnalysisComplete?: NullableBoolFieldUpdateOperationsInput | boolean | null
     visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
     citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
     topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
@@ -6554,7 +6554,7 @@ export namespace Prisma {
     targetUrl?: string | null
     competitorUrl?: string | null
     contentHash?: string | null
-    isDeepAnalysisComplete?: boolean
+    isDeepAnalysisComplete?: boolean | null
     visibilityScore?: number | null
     citationProbability?: number | null
     topicAuthority?: number | null
@@ -6577,7 +6577,7 @@ export namespace Prisma {
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
-    isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
+    isDeepAnalysisComplete?: NullableBoolFieldUpdateOperationsInput | boolean | null
     visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
     citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
     topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
@@ -6600,7 +6600,7 @@ export namespace Prisma {
     targetUrl?: NullableStringFieldUpdateOperationsInput | string | null
     competitorUrl?: NullableStringFieldUpdateOperationsInput | string | null
     contentHash?: NullableStringFieldUpdateOperationsInput | string | null
-    isDeepAnalysisComplete?: BoolFieldUpdateOperationsInput | boolean
+    isDeepAnalysisComplete?: NullableBoolFieldUpdateOperationsInput | boolean | null
     visibilityScore?: NullableIntFieldUpdateOperationsInput | number | null
     citationProbability?: NullableIntFieldUpdateOperationsInput | number | null
     topicAuthority?: NullableIntFieldUpdateOperationsInput | number | null
@@ -6927,6 +6927,11 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -7007,6 +7012,14 @@ export namespace Prisma {
     visibilityScore?: SortOrder
     citationProbability?: SortOrder
     topicAuthority?: SortOrder
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -7103,6 +7116,10 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -7283,6 +7300,19 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {

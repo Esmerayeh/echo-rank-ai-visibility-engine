@@ -41,15 +41,12 @@ const getGlobalFiltersExtension = () => {
                     const globalData = { isDeleted: false };
 
                     switch (operation) {
-                        case PrismaOperation.findUnique:
-                        case PrismaOperation.findUniqueOrThrow:
                         case PrismaOperation.findMany:
                         case PrismaOperation.findFirst:
                         case PrismaOperation.findFirstOrThrow:
                         case PrismaOperation.count:
                         case PrismaOperation.groupBy:
                         case PrismaOperation.aggregate:
-                        case PrismaOperation.update:
                         case PrismaOperation.updateMany:
                         case PrismaOperation.updateManyAndReturn:
                         case PrismaOperation.delete:
@@ -79,17 +76,6 @@ const getGlobalFiltersExtension = () => {
                                 }
                             break;
 
-                        case PrismaOperation.upsert:
-                            args.where = {
-                                ...(globalData as any),
-                                ...(args.where as { [key in string]?: any })
-                            } as typeof args.where;
-                            if (args.create && typeof args.create === 'object')
-                                args.create = {
-                                    ...(globalData as any),
-                                    ...(args.create as { [key in string]?: any })
-                                } as typeof args.create;
-                            break;
                         default:
                             break;
                     }

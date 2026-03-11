@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { getInstance as getLlmInstance } from "../integrations/llm/main.js";
+import { getStorageProvider } from "../integrations/storage/main.js";
 import { optionalAuthMiddleware } from "../middlewares/authMiddleware.js";
 import prisma from "../client.js";
 import crypto from 'crypto';
@@ -118,8 +119,8 @@ async function runDeepAnalysis(analysisId, body) {
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             const result = JSON.parse(jsonMatch[0]);
-            await prisma.analysis.update({
-                where: { id: analysisId },
+            await prisma.analysis.updateMany({
+                where: { id: analysisId, isDeleted: false },
                 data: {
                     visibilityScore: result.metrics.visibilityScore,
                     citationProbability: result.metrics.citationProbability,
@@ -205,7 +206,7 @@ aiRoutes.post('/analyze', zValidator('json', analyzeSchema), async (c) => {
 });
 aiRoutes.get('/analysis/:id', async (c) => {
     const id = c.req.param('id');
-    const analysis = await prisma.analysis.findUnique({
+    const analysis = await prisma.analysis.findFirst({
         where: { id, isDeleted: false }
     });
     if (!analysis) {
@@ -540,11 +541,20 @@ aiRoutes.post('/upload', async (c) => {
         return c.json({ error: 'No file uploaded' }, 400);
     }
     try {
+        const storage = getStorageProvider();
         const fileName = file.name || 'upload';
-        const mockUrl = `https://placeholder.com/uploads/${Date.now()}-${fileName}`;
+        const key = `uploads/${Date.now()}-${fileName}`;
+        const uploadResult = await storage.uploadFile({
+            file,
+            destinationKey: key
+        });
+        // Get signed URL for the uploaded file
+        const urlResult = await storage.generateDownloadSignedUrl({
+            key: uploadResult.key
+        });
         return c.json({
-            url: mockUrl,
-            key: `local-placeholder-${Date.now()}`
+            url: urlResult.url,
+            key: uploadResult.key
         });
     }
     catch (error) {

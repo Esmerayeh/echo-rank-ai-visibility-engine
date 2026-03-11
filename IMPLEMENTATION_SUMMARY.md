@@ -1,27 +1,23 @@
 # EchoRank Implementation Summary
 
-## Cloud Storage Removal
-- **Feature**: Removed all dependencies on GCP Cloud Storage and `@uptiqai/integrations-sdk` storage layer.
-- **Feature**: Updated `backend/src/routes/ai.routes.ts` to use local placeholders for file exports and uploads.
+## Deployment & Build Fixes
+- **Frontend**: Fixed build issues by installing missing dependencies and resolving type errors. Both projects now build successfully.
+- **Backend**: Resolved type errors in storage integration and route handlers.
+
+## Cloud Storage Restoration (GCP)
+- **Feature**: Restored GCP Cloud Storage integration as requested by the user.
 - **Implementation**: 
-  - `/ai/export` now returns a base64 data URI instead of a signed URL.
-  - `/ai/upload` now returns a mock URL placeholder.
-  - Replaced `backend/src/integrations/storage/main.ts` with a mock implementation to ensure no cloud storage is used.
+  - Updated `backend/src/integrations/storage/main.ts` to use `@uptiqai/integrations-sdk` with `InfraProvider.GCP`.
+  - Updated `/ai/upload` endpoint to perform real uploads and return signed URLs via the SDK.
 
-## Dashboard Demo Data
-- **Feature**: Restored and reinforced demo analysis data for the dashboard.
-- **Implementation**: 
-  - Updated `backend/src/routes/ai.routes.ts` to always return demo data for the OpenAI blog if no analyses exist in the database or if data is missing.
-  - Added robust error handling and null-coalescing to the dashboard metrics endpoint.
-  - Updated `frontend/src/services/ai.service.ts` to be more resilient and ensure valid objects are always returned.
-  - Verified that the dashboard correctly displays the "Demo Analysis" label and sample metrics (72% visibility score, etc.).
+## Database & Prisma (Backward Compatibility)
+- **Prisma Schema**: Updated `isDeepAnalysisComplete` in the `Analysis` model to be optional (`Boolean?`) for strict backward compatibility.
+- **Soft Delete**: Refined the Prisma extension in `backend/src/client.ts` to exclude `findUnique` and `update` from automatic filtering, as these require unique indexes.
+- **Service Layer**: Updated `userService.ts` and `ai.routes.ts` to use `findFirst` and `updateMany` with explicit `isDeleted: false` filters to maintain data integrity and compliance with soft-delete rules.
 
-## Database & Integrations
-- **Prisma**: Updated `backend/src/prisma/schema.prisma` to make fields in the `Analysis` model optional for backward compatibility.
-- **Cleanup**: Verified that unused integrations like Stripe, Twilio, Resend, and Google OAuth are not used in the application routes or controllers.
-- **Supabase**: Ensured the application relies solely on Supabase for data storage.
+## Dashboard & Demo Data
+- **Demo Mode**: Verified that the backend returns the specified OpenAI blog demo data (72% visibility score, 64% citation probability, etc.) when no user analysis is found.
+- **UI Labeling**: Confirmed the frontend correctly displays the "Demo Analysis" badge and sample metrics to ensure the dashboard is never empty.
 
-## Verification
-- **Prisma**: Schema validated and Prisma client regenerated successfully.
-- **Build**: Both backend and frontend projects built without errors.
-- **Stability**: Ensured that the application no longer requires GCP credentials for core functionality.
+## Integration Cleanup
+- **Verified**: Removed or confirmed absence of unused integrations (Stripe, Twilio, Resend, Google OAuth) from all active application logic. The app now relies solely on Supabase for database functionality.

@@ -10,8 +10,8 @@ import bcrypt from 'bcrypt';
  * Get user by ID
  */
 export async function getUserById(userId: string): Promise<User | null> {
-    return await prisma.user.findUnique({
-        where: { id: userId }
+    return await prisma.user.findFirst({
+        where: { id: userId, isDeleted: false }
     });
 }
 
@@ -19,8 +19,8 @@ export async function getUserById(userId: string): Promise<User | null> {
  * Get user by email
  */
 export async function getUserByEmail(email: string): Promise<User | null> {
-    return await prisma.user.findUnique({
-        where: { email }
+    return await prisma.user.findFirst({
+        where: { email, isDeleted: false }
     });
 }
 
@@ -29,7 +29,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
  */
 export async function getUserIdentities(userId: string) {
     return await prisma.userIdentity.findMany({
-        where: { userId }
+        where: { userId, isDeleted: false }
     });
 }
 
@@ -95,19 +95,18 @@ export async function registerWithEmailPassword(email: string, password: string,
  */
 export async function authenticateWithEmailPassword(email: string, password: string): Promise<User> {
     // Find user identity
-    const identity = await prisma.userIdentity.findUnique({
+    const identity = await prisma.userIdentity.findFirst({
         where: {
-            provider_providerId: {
-                provider: 'EmailPassword',
-                providerId: email
-            }
+            provider: 'EmailPassword',
+            providerId: email,
+            isDeleted: false
         },
         include: {
             user: true
         }
     });
 
-    if (!identity) {
+    if (!identity || identity.user.isDeleted) {
         throw new Error('Invalid email or password');
     }
 
@@ -120,8 +119,8 @@ export async function authenticateWithEmailPassword(email: string, password: str
     }
 
     // Update last login
-    await prisma.userIdentity.update({
-        where: { id: identity.id },
+    await prisma.userIdentity.updateMany({
+        where: { id: identity.id, isDeleted: false },
         data: {
             metadata: {
                 ...metadata,
