@@ -2,7 +2,6 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { getInstance as getLlmInstance } from "../integrations/llm/main.js";
-import { getStorageProvider } from "../integrations/storage/main.js";
 import { optionalAuthMiddleware } from "../middlewares/authMiddleware.js";
 import prisma from "../client.js";
 import crypto from 'crypto';
@@ -296,8 +295,8 @@ aiRoutes.get('/dashboard-metrics', async (c) => {
         }
         const latest = analyses[0];
         const previous = analyses[1] || latest;
-        // Fallback to demo if latest analysis is completely empty
-        if (!latest.visibilityScore && !latest.radarData) {
+        // Fallback to demo if latest analysis is completely empty or has zero score
+        if ((!latest.visibilityScore || latest.visibilityScore === 0) && !latest.radarData) {
             return c.json(DEMO_METRICS);
         }
         const calculateChange = (current, prev) => {
@@ -540,26 +539,10 @@ aiRoutes.post('/upload', async (c) => {
     if (!file || !(file instanceof Blob)) {
         return c.json({ error: 'No file uploaded' }, 400);
     }
-    try {
-        const storage = getStorageProvider();
-        const fileName = file.name || 'upload';
-        const key = `uploads/${Date.now()}-${fileName}`;
-        const uploadResult = await storage.uploadFile({
-            file,
-            destinationKey: key
-        });
-        // Get signed URL for the uploaded file
-        const urlResult = await storage.generateDownloadSignedUrl({
-            key: uploadResult.key
-        });
-        return c.json({
-            url: urlResult.url,
-            key: uploadResult.key
-        });
-    }
-    catch (error) {
-        console.error('Upload failed:', error);
-        return c.json({ error: 'Upload failed' }, 500);
-    }
+    // Placeholder URL instead of actual cloud storage
+    return c.json({
+        url: '#',
+        key: `local-placeholder-${Date.now()}`
+    });
 });
 export default aiRoutes;

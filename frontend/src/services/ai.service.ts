@@ -113,6 +113,7 @@ export interface HistoryItem {
 
 export interface DashboardMetrics {
   isDemo?: boolean;
+  website?: string;
   visibilityScore: number;
   visibilityScoreChange: number;
   citationProbability: number;
