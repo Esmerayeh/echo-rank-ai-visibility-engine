@@ -28,7 +28,8 @@ echo-rank-ai-visibility-engine/
 │   ├── package.json        # Node.js dependencies
 │   └── vite.config.js      # Vite configuration
 ├── docs/                   # Additional documentation
-└── README.md
+└── README.md'
+```
 
 #Core Features
 { The AI Mirror }: Generates a real-time "Shadow Summary" to visualize how an LLM currently describes your brand.
