@@ -5,7 +5,7 @@
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 echo-rank-ai-visibility-engine/
@@ -29,3 +29,12 @@ echo-rank-ai-visibility-engine/
 │   └── vite.config.js      # Vite configuration
 ├── docs/                   # Additional documentation
 └── README.md
+
+#Core Features
+{ The AI Mirror }: Generates a real-time "Shadow Summary" to visualize how an LLM currently describes your brand.
+
+{ AI Readability Index (AIRI) }: A metric that analyzes content for Semantic Density and Fact Concentration.
+
+{ The Brand Voice Tuner }: Suggests "Fact Injections" to convert marketing prose into high-authority AI training data.
+
+{ Entity Mapping }: Uses 3D visualization (Three.js) to show brand positioning within an LLM's latent space.
