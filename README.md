@@ -31,11 +31,59 @@ echo-rank-ai-visibility-engine/
 └── README.md'
 ```
 
-#Core Features
-{ The AI Mirror }: Generates a real-time "Shadow Summary" to visualize how an LLM currently describes your brand.
+# Core Features
 
-{ AI Readability Index (AIRI) }: A metric that analyzes content for Semantic Density and Fact Concentration.
+**The AI Mirror** : Generates a real-time "Shadow Summary" to visualize how an LLM currently describes your brand.
 
-{ The Brand Voice Tuner }: Suggests "Fact Injections" to convert marketing prose into high-authority AI training data.
+**AI Readability Index (AIRI)** : A metric that analyzes content for Semantic Density and Fact Concentration.
 
-{ Entity Mapping }: Uses 3D visualization (Three.js) to show brand positioning within an LLM's latent space.
+**The Brand Voice Tuner** : Suggests "Fact Injections" to convert marketing prose into high-authority AI training data.
+
+**Entity Mapping** : Uses 3D visualization (Three.js) to show brand positioning within an LLM's latent space.
+
+## Quick Start Guide
+
+*Prerequisites* 
+Python 3.9+ and Node.js 18+
+
+API Keys for OpenAI or Gemini
+
+A Search API key (e.g., Serper, Google Custom Search)
+
+*1. Installation*
+```text
+#Clone the repository
+git clone https://github.com/Esmerayeh/echo-rank-ai-visibility-engine.git
+cd echo-rank-ai-visibility-engine
+
+#Setup Backend
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+#Setup Frontend
+cd ../frontend
+npm install
+```
+
+*2. Configuration*
+Create a .env file in the /backend directory
+```text
+OPENAI_API_KEY=your_api_key
+SEARCH_API_KEY=your_search_key
+FLASK_ENV=development
+```
+
+*3. Execution*
+
+Run Backend:
+```text
+python app.py
+```
+Run Frontend:
+```text
+npm run dev
+```
+
+The dashboard will be accessible at: http://localhost:5173
